@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/nfs/homes/baouragh/Desktop/philo-",
-      "program": "/nfs/homes/baouragh/Desktop/philo-/build/Debug/outDebug",
+      "cwd": "/nfs/homes/baouragh/Desktop/philo-/philo_m",
+      "program": "/nfs/homes/baouragh/Desktop/philo-/philo_m/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
