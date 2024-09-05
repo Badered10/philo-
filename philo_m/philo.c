@@ -6,20 +6,44 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 17:43:07 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/06 00:26:11 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void free_double(t_philo **ptr)
+time_t get_curr_time(void)
+{
+    time_t res;
+    struct timeval tv;
+
+    res = -1;
+    if (gettimeofday(&tv, NULL) == -1)
+        return (-1);
+    res = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+    return (res);
+}
+
+void free_forks(long **forks)
+{
+    int i;
+
+    i = 0;
+    while(forks[i])
+    {
+        free(forks[i]);
+        i++;
+    }
+    free(forks);
+}
+
+void free_philo(t_philo **ptr)
 {
     int i;
 
     i = 0;
     while(ptr[i])
     {
-        printf("ptr[%d]\n",i);
         if (ptr[i]->philo)
             free(ptr[i]->philo);
         free(ptr[i]);
@@ -62,15 +86,13 @@ t_philo **create_philos(int np)
     {
         philos[x] = malloc(sizeof(t_philo));
         if (!philos[x])
-            return (free_double(philos), NULL);
-        if(x != 3)
-            philos[x]->philo = malloc(sizeof(pthread_t));
-        else
-            philos[x]->philo = NULL;
+            return (free_philo(philos), NULL);
+        philos[x]->id = x + 1;
+        philos[x]->philo = malloc(sizeof(pthread_t));
         if (!philos[x]->philo)
         {
             philos[x + 1] = NULL;
-            return(free_double(philos), NULL);
+            return(free_philo(philos), NULL);
         }
         *philos[x]->philo = 0;
         x++;
@@ -78,6 +100,26 @@ t_philo **create_philos(int np)
     philos[x] = NULL;
     return (philos);
 }
+
+long **create_forks(long np)
+{
+    long **forks;
+    long i;
+    forks = malloc(sizeof(long *) * (np + 1));
+    if (!forks)
+        return (NULL);
+    while(i < np)
+    {
+        forks[i] = malloc(sizeof(long));
+        if (!forks[i])
+           return (free_forks(forks), NULL);
+        *forks[i] = i + 1;
+        i++;
+    }
+    forks[i] = NULL;
+    return (forks);
+}
+
 t_data *set_data(int argc, char **argv)
 {
     t_data *data;
@@ -86,26 +128,21 @@ t_data *set_data(int argc, char **argv)
     if (!data)
         return (NULL);
     data->num_of_philos = ft_atol(argv[1]);
-    if(data->num_of_philos == -1)
-        return (free(data), NULL);
     data->ttd = ft_atol(argv[2]);
-    if (data->ttd == -1)
-        return (free(data), NULL);
     data->tte = ft_atol(argv[3]);
-    if(data->tte == -1)
-        return (free(data), NULL);
     data->tts = ft_atol(argv[4]);
-    if(data->tts == -1)
-        return (free(data), NULL);
     data->num_of_meals = -10;
     if (argc == 6)
         data->num_of_meals= ft_atol(argv[5]);
-    if(data->num_of_meals == -1)
+    if(data->num_of_meals == -1 || data->num_of_philos == -1 
+            || data->ttd == -1 || data->tte == -1 || data->tts == -1)
         return (free(data), NULL);
-    data->forks = data->num_of_philos;
+    data->forks = create_forks(data->num_of_philos);
+    if(!data->forks)
+        return (free(data), NULL);
     data->philos = create_philos(data->num_of_philos);
     if(!data->philos)
-        return (free(data), NULL);
+        return (free_forks(data->forks), free(data), NULL);
     return (data);
 }
 
@@ -114,7 +151,11 @@ void    *philosophy(void *infos)
     t_data *data;
     data = infos;
 
-    printf("A\n");
+    //while (one of the philos die)
+    // take left and right fork
+    // eat
+    // sleep
+    // think
     return (NULL);
 }
 
@@ -136,7 +177,12 @@ void    simulation(t_data *data)
        i++;
     }
 }
-
+void clean_up(t_data *data)
+{
+    free_forks(data->forks);
+    free_philo(data->philos);
+    free(data);
+}
 int main(int argc, char **argv) // np ttd tte tts nm // 5 20 5 10 5
 {
     t_data *data;
@@ -147,4 +193,5 @@ int main(int argc, char **argv) // np ttd tte tts nm // 5 20 5 10 5
     if(!data)
         return (2);
     simulation(data);
+    clean_up(data);
 }
