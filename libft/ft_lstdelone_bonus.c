@@ -1,32 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_lstdelone_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/16 13:29:19 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/18 18:06:25 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
-
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	if (!lst || !del)
+		return ;
+	del(lst->content);
+	free(lst);
+}

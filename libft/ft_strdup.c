@@ -1,32 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/06 21:07:53 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/18 18:07:10 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+char	*ft_strdup(const char *s1)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	char	*copy;
+	size_t	lenth;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	lenth = ft_strlen(s1);
+	copy = (char *)malloc(lenth + 1);
+	if (!copy)
+		return (NULL);
+	ft_strlcpy(copy, s1, lenth + 1);
+	return (copy);
+}

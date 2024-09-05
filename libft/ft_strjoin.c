@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/09 21:07:15 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/22 16:15:07 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	char	*new;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	if (!s1 || !s2)
+		return (NULL);
+	new = (char *)ft_calloc((ft_strlen(s1) + ft_strlen(s2)) + 1, sizeof(char));
+	if (!new)
+		return (NULL);
+	ft_memmove(new, s1, ft_strlen(s1));
+	ft_memmove(new + ft_strlen(s1), s2, ft_strlen(s2));
+	return (new);
+}

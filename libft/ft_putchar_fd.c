@@ -1,32 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/17 22:52:01 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/18 18:06:56 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	ft_putchar_fd(char c, int fd)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
-
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	if (fd < 0)
+		return ;
+	write(fd, &c, 1);
+}

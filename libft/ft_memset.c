@@ -1,32 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/01 13:00:26 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/23 17:12:07 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	*ft_memset(void *b, int c, size_t len)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	unsigned char	*temp;
+	size_t			i;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	temp = (unsigned char *)b;
+	i = 0;
+	while (i < len)
+		temp[i++] = (unsigned char)c;
+	return (b);
+}

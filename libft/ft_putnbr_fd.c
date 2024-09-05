@@ -1,32 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/17 23:20:30 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/20 10:02:58 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	ft_putnbr_fd(int n, int fd)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	long	x;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	x = n;
+	if (fd < 0)
+		return ;
+	if (x < 0)
+	{
+		ft_putchar_fd('-', fd);
+		x = -x;
+	}
+	if (x > 9)
+	{
+		ft_putnbr_fd(x / 10, fd);
+		ft_putchar_fd(x % 10 + 48, fd);
+	}
+	else if (x >= 0 && x <= 9)
+	{
+		ft_putchar_fd(x + 48, fd);
+	}
+}

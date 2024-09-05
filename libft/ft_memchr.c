@@ -1,32 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/03 20:52:05 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/23 17:22:57 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	*ft_memchr(const void *s, int c, size_t n)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	unsigned char	*ptr;
+	int				i;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	ptr = (unsigned char *)s;
+	i = 0;
+	while (n)
+	{
+		if (ptr[i] == (unsigned char)c)
+			return ((void *)ptr + i);
+		i++;
+		n--;
+	}
+	return (NULL);
+}

@@ -1,32 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/04 22:47:22 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/22 10:41:27 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+void	*ft_memmove(void *dst, const void *src, size_t len)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	unsigned char	*destination;
+	unsigned char	*source;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	if (!src && !dst)
+		return (NULL);
+	if (src > dst)
+	{
+		ft_memcpy(dst, src, len);
+		return (dst);
+	}
+	destination = (unsigned char *)dst;
+	source = (unsigned char *)src;
+	while (len != 0)
+	{
+		destination[len - 1] = source[len - 1];
+		len--;
+	}
+	return ((void *)destination);
+}

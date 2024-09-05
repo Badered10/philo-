@@ -1,32 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/06 17:53:19 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/24 16:49:43 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+int	ft_atoi(const char *str)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	char	*var;
+	int		res;
+	int		signe;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	var = (char *)str;
+	res = 0;
+	signe = 1;
+	while ((*var >= 9 && *var <= 13) || *var == 32)
+		var++;
+	if (*var == '-' || *var == '+')
+	{
+		if (*var == '-')
+			signe *= -1;
+		var++;
+	}
+	while (*var && *var >= '0' && *var <= '9')
+	{
+		res = res * 10 + (*var - '0');
+		var++;
+	}
+	res *= signe;
+	return (res);
+}

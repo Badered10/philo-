@@ -1,32 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/05 13:41:31 by baouragh         ###   ########.fr       */
+/*   Created: 2023/11/05 15:04:36 by baouragh          #+#    #+#             */
+/*   Updated: 2023/11/18 20:23:26 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct s_data
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
-    int np;
-    int nm;
-    long    ttd;
-    long    tte;
-    long    tts;
-}                   t_data;
+	char	*source;
+	size_t	source_lenth;
 
-int	ft_isdigit(int c);
-
-int	ft_atoi(const char *str);
-
-#endif
+	source = (char *)src;
+	source_lenth = ft_strlen(source);
+	if (dstsize == 0)
+		return (source_lenth);
+	dstsize -= 1;
+	while ((dstsize > 0) && *source)
+	{
+		*dst++ = *source++;
+		if (dstsize != 0)
+			dstsize--;
+	}
+	*dst = '\0';
+	return (source_lenth);
+}
