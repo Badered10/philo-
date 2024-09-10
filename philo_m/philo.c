@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/10 16:36:27 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/10 18:32:30 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ time_t	get_curr_time(void)
 	return (res);
 }
 
-void	free_forks(long **forks)
+void	free_forks(t_fork **forks)
 {
 	int	i;
 
@@ -79,7 +79,7 @@ int	parse(int argc, char **argv)
 	return (1);
 }
 
-t_philo	**create_philos(int np)
+t_philo	**create_philos(int np, t_data *data)
 {
 	t_philo	**philos;
 	int		x;
@@ -91,38 +91,37 @@ t_philo	**create_philos(int np)
 	while (x < np)
 	{
 		philos[x + 1] = NULL;
-		if (x != 3)
-			philos[x] = malloc(sizeof(t_philo));
-		else
-			philos[3] = NULL;
+		philos[x] = malloc(sizeof(t_philo));
 		if (!philos[x])
-			return (printf("Allocation faild\n"), free_philo(philos), NULL);
+			return (printf(ALLOC_ERR), free_philo(philos), NULL);
 		philos[x]->philo = malloc(sizeof(pthread_t));
 		if (!philos[x]->philo)
-			return (printf("Allocation faild\n"), free_philo(philos), NULL);
-		philos[x]->id = x + 1;
+			return (printf(ALLOC_ERR), free_philo(philos), NULL);
 		if (pthread_mutex_init(&philos[x]->mutex, NULL))
 			return (printf("Creat a mutex faild!\n"), free_philo(philos), NULL);
+		philos[x]->id = x + 1;
+		philos[x]->data = data;
 		x++;
 	}
 	return (philos);
 }
 
-long	**create_forks(long np)
+t_fork	**create_forks(long np)
 {
-	long	**forks;
+	t_fork	**forks;
 	long	i;
 
 	i = 0;
-	forks = malloc(sizeof(long *) * (np + 1));
+	forks = malloc(sizeof(t_fork *) * (np + 1));
 	if (!forks)
 		return (NULL);
 	while (i < np)
 	{
-		forks[i] = malloc(sizeof(long));
+		forks[i] = malloc(sizeof(t_fork));
 		if (!forks[i])
 			return (free_forks(forks), NULL);
-		*forks[i] = i + 1;
+		forks[i]->id = i + 1;
+		forks[i]->state = AV;
 		i++;
 	}
 	forks[i] = NULL;
@@ -149,20 +148,90 @@ t_data	*set_data(int argc, char **argv)
 	data->forks = create_forks(data->num_of_philos);
 	if (!data->forks)
 		return (free(data), NULL);
-	data->philos = create_philos(data->num_of_philos);
+	data->philos = create_philos(data->num_of_philos, data);
 	if (!data->philos)
 		return (free_forks(data->forks), free(data), NULL);
 	return (data);
 }
 
+void	take_left_fork(t_philo *philo)
+{
+	time_t time;
+
+	pthread_mutex_lock(&philo->mutex);
+	time = get_curr_time() - philo->data->start;
+	if (philo->data->die_flag)
+	{
+		philo->data->forks[philo->id - 1]->state = NOT_AV;
+		printf("At :%ld\tPhilo %ld, has Take left fork :%ld\n",time, philo->id, philo->id);
+	}
+	pthread_mutex_unlock(&philo->mutex);
+}
+
+void	take_right_fork(t_philo *philo, long id)
+{
+	time_t time;
+
+	pthread_mutex_lock(&philo->mutex);
+	time = get_curr_time() - philo->data->start;
+	if (philo->data->die_flag)
+	{
+		philo->data->forks[id]->state = NOT_AV;
+		printf("At :%ld\tPhilo %ld, has Take right fork :%ld\n",time, philo->id, id);
+	}
+	pthread_mutex_unlock(&philo->mutex);
+}
+
+void	eating(t_philo *philo, long right_id)
+{
+	time_t time;
+
+	pthread_mutex_lock(&philo->mutex);
+	time = get_curr_time() - philo->data->start;
+	if (philo->data->die_flag)
+	{
+		if (philo->last_meal_time)
+		philo->last_meal_time = time;
+		printf("At :%ld\tPhilo %ld, Eating\n",time, philo->id);
+	}
+	pthread_mutex_unlock(&philo->mutex);
+	pthread_mutex_lock(&philo->mutex);
+	philo->data->forks[philo->id - 1]->state = AV;
+	philo->data->forks[right_id]->state = AV;
+	pthread_mutex_unlock(&philo->mutex);
+	usleep(philo->data->tts);
+}
+
 void	*philosophy(void *infos)
 {
-	t_data	*data;
+	t_philo	*philo;
+	long right_id;
 
-	data = infos;
-	// while (one of the philos die)
-	// take left and right fork
+	philo = infos;
+	if (philo->id == 1)
+		right_id = philo->data->num_of_philos -1;
+	else
+		right_id = philo->id - 2;
+	// else if (philo->id == 1)
+	// 	right_id = philo->data->num_of_philos - 1;
+	if (philo->id % 3 == 0)
+		usleep(100);
+	while (philo->data->die_flag)
+	{
+		while (philo->data->forks[philo->id - 1]->state == NOT_AV)
+			;
+		take_left_fork(philo);
+		while (philo->data->forks[right_id]->state == NOT_AV)
+			;
+		take_right_fork(philo, right_id);
+		eating(philo, right_id);
+		printf("At :%ld\tPhilo %ld, Sleeping\n",get_curr_time() - philo->data->start, philo->id);
+		usleep(philo->data->tts);
+		printf("At :%ld\tPhilo %ld, Thinking\n",get_curr_time() - philo->data->start, philo->id);
+	}
+	// take left and right forks if they are available
 	// eat
+	// retrun left and right forks
 	// sleep
 	// think
 	return (NULL);
@@ -173,9 +242,11 @@ void	simulation(t_data *data)
 	int	i;
 
 	i = 0;
+	data->start = get_curr_time();
+	data->die_flag = 1;
 	while (i < data->num_of_philos)
 	{
-		pthread_create(data->philos[i]->philo, NULL, &philosophy, data);
+		pthread_create(data->philos[i]->philo, NULL, &philosophy, data->philos[i]);
 		i++;
 	}
 	i = 0;
