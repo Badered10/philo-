@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:53:19 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/10 16:23:05 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/11 03:06:32 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 long	ft_atol(const char *str)
 {
 	char	*var;
-	size_t	res;
-	size_t	old;
+	long	res;
+	long	digit;
 
 	var = (char *)str;
 	res = 0;
@@ -30,11 +30,11 @@ long	ft_atol(const char *str)
 	}
 	while (*var && *var >= '0' && *var <= '9')
 	{
-		old = res;
-		res = res * 10 + (*var - '0');
-		if (res > LONG_MAX || old > res)
+		digit = *var - '0';
+		if (res > (LONG_MAX - digit) / 10)
 			return (printf("Invalid arg '%s'%s\n", str, ERR_MSG), -1);
+		res = res * 10 + digit;
 		var++;
 	}
-	return ((long)res);
+	return (res);
 }

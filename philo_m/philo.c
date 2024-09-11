@@ -6,11 +6,25 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/10 18:32:30 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/11 02:50:26 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <string.h>
+
+void	destroy_forks(t_data *data)
+{
+	int i;
+
+	i = data->num_of_philos - 1;
+	while (i >= 0)
+	{
+		pthread_mutex_destroy(&data->forks[i]);
+		i--;
+	}
+	free(data->forks);
+}
 
 time_t	get_curr_time(void)
 {
@@ -22,34 +36,6 @@ time_t	get_curr_time(void)
 		return (-1);
 	res = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	return (res);
-}
-
-void	free_forks(t_fork **forks)
-{
-	int	i;
-
-	i = 0;
-	while (forks[i])
-	{
-		free(forks[i]);
-		i++;
-	}
-	free(forks);
-}
-
-void	free_philo(t_philo **ptr)
-{
-	int	i;
-
-	i = 0;
-	while (ptr[i])
-	{
-		if (ptr[i]->philo)
-			free(ptr[i]->philo);
-		free(ptr[i]);
-		i++;
-	}
-	free(ptr);
 }
 
 int	parse(int argc, char **argv)
@@ -79,52 +65,53 @@ int	parse(int argc, char **argv)
 	return (1);
 }
 
-t_philo	**create_philos(int np, t_data *data)
+t_philo	*create_philos(t_data *data)
 {
-	t_philo	**philos;
+	t_philo	*philos;
 	int		x;
 
 	x = 0;
-	philos = malloc(sizeof(t_philo *) * (np + 1));
+	philos = malloc(sizeof(t_philo) * data->num_of_philos);
 	if (!philos)
 		return (NULL);
-	while (x < np)
+	memset(philos, 0, sizeof(t_philo) * data->num_of_philos);
+	while (x < data->num_of_philos)
 	{
-		philos[x + 1] = NULL;
-		philos[x] = malloc(sizeof(t_philo));
-		if (!philos[x])
-			return (printf(ALLOC_ERR), free_philo(philos), NULL);
-		philos[x]->philo = malloc(sizeof(pthread_t));
-		if (!philos[x]->philo)
-			return (printf(ALLOC_ERR), free_philo(philos), NULL);
-		if (pthread_mutex_init(&philos[x]->mutex, NULL))
-			return (printf("Creat a mutex faild!\n"), free_philo(philos), NULL);
-		philos[x]->id = x + 1;
-		philos[x]->data = data;
+		philos[x].id = x + 1;
+		philos[x].left_fork = &data->forks[x];
+		if (x + 1 != data->num_of_philos )
+			philos[x].right_fork = &data->forks[x + 1];
+		else
+			philos[x].right_fork = &data->forks[0];
+		philos[x].data = data;
 		x++;
 	}
 	return (philos);
 }
 
-t_fork	**create_forks(long np)
+pthread_mutex_t	*create_forks(long np)
 {
-	t_fork	**forks;
+	pthread_mutex_t	*forks;
 	long	i;
 
 	i = 0;
-	forks = malloc(sizeof(t_fork *) * (np + 1));
+	forks = malloc(sizeof(pthread_mutex_t) * np);
 	if (!forks)
 		return (NULL);
-	while (i < np)
+	while(i < np)
 	{
-		forks[i] = malloc(sizeof(t_fork));
-		if (!forks[i])
-			return (free_forks(forks), NULL);
-		forks[i]->id = i + 1;
-		forks[i]->state = AV;
+		if (pthread_mutex_init(&forks[i], NULL))
+		{
+			while (i > 0)
+			{
+				pthread_mutex_destroy(&forks[i]);
+				i--;
+			}
+			free(forks);
+			return (printf("Failed to create a mutex!\n"), NULL);
+		}
 		i++;
 	}
-	forks[i] = NULL;
 	return (forks);
 }
 
@@ -148,9 +135,9 @@ t_data	*set_data(int argc, char **argv)
 	data->forks = create_forks(data->num_of_philos);
 	if (!data->forks)
 		return (free(data), NULL);
-	data->philos = create_philos(data->num_of_philos, data);
+	data->philos = create_philos(data);
 	if (!data->philos)
-		return (free_forks(data->forks), free(data), NULL);
+		return (destroy_forks(data), free(data), NULL);
 	return (data);
 }
 
@@ -162,7 +149,6 @@ void	take_left_fork(t_philo *philo)
 	time = get_curr_time() - philo->data->start;
 	if (philo->data->die_flag)
 	{
-		philo->data->forks[philo->id - 1]->state = NOT_AV;
 		printf("At :%ld\tPhilo %ld, has Take left fork :%ld\n",time, philo->id, philo->id);
 	}
 	pthread_mutex_unlock(&philo->mutex);
@@ -176,7 +162,6 @@ void	take_right_fork(t_philo *philo, long id)
 	time = get_curr_time() - philo->data->start;
 	if (philo->data->die_flag)
 	{
-		philo->data->forks[id]->state = NOT_AV;
 		printf("At :%ld\tPhilo %ld, has Take right fork :%ld\n",time, philo->id, id);
 	}
 	pthread_mutex_unlock(&philo->mutex);
@@ -192,7 +177,7 @@ void	eating(t_philo *philo, long right_id)
 	{
 		if (philo->last_meal_time)
 		philo->last_meal_time = time;
-		printf("At :%ld\tPhilo %ld, Eating\n",time, philo->id);
+		printf("At :%lld\tPhilo %ld, Eating\n",time, philo->id);
 	}
 	pthread_mutex_unlock(&philo->mutex);
 	pthread_mutex_lock(&philo->mutex);
@@ -257,10 +242,11 @@ void	simulation(t_data *data)
 	}
 }
 
+
 void	clean_up(t_data *data)
 {
-	free_forks(data->forks);
-	free_philo(data->philos);
+	destroy_forks(data);
+	free(data->philos);
 	free(data);
 }
 
