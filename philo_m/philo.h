@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/11 01:55:55 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/12 22:16:47 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ typedef struct s_philo
 {
 	long			id;
 	long			eaten_meals;
-	int				last_meal_time;
+	long			last_meal_time;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
 	pthread_t		philo;
@@ -51,6 +51,8 @@ typedef struct s_data
 	long			ttd;
 	long			tte;
 	long			tts;
+	pthread_mutex_t write;
+	pthread_mutex_t read;
 	time_t			start;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
