@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/12 22:54:08 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/13 20:23:45 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,16 @@ void	destroy_forks(t_data *data)
 
 time_t	get_curr_time(void)
 {
-	time_t			res;
 	struct timeval	tv;
 
-	res = -1;
 	if (gettimeofday(&tv, NULL) == -1)
 		return (-1);
-	res = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-	return (res);
+	return((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+long diff(long now, long start)
+{
+	return (now - start);
 }
 
 void	ft_usleep(time_t time)
@@ -43,9 +45,12 @@ void	ft_usleep(time_t time)
 	time_t	start;
 
 	start = get_curr_time();
-	printf("time / 10 = %ld\n",time / 10);
-	while ((get_curr_time() - start) < time)
-		usleep(time / 10);
+	while (1)
+	{
+		if (diff(get_curr_time(), start) >= time)
+			break;
+		usleep (500);
+	}
 }
 
 int	parse(int argc, char **argv)
@@ -66,7 +71,7 @@ int	parse(int argc, char **argv)
 		if (argv[x][y] && !ft_isdigit(argv[x][y]))
 		{
 			printf("Error in args.\n");
-			printf("Stop at :'%c' on '%s'", argv[x][y], argv[x]);
+			printf("Stop '%c' on '%s'", argv[x][y], argv[x]);
 			printf(", Please check out !\n");
 			return (0);
 		}
@@ -177,7 +182,7 @@ void	take_left_fork(t_philo *philo)
 	time = get_curr_time() - philo->data->start;
 	if (philo->data->die_flag)
 	{
-		printf("At :%ld   Philo %ld, has Take left fork: %ld \n",time, philo->id, philo->id - 1);
+		printf("%ld %ld has taken a fork\n",time, philo->id);
 	}
 }
 
@@ -192,7 +197,7 @@ void	take_right_fork(t_philo *philo)
 		long id =  philo->id - 2;
 		if(philo->id == 1)
 			id = philo->data->num_of_philos - 1;
-		printf("At :%ld   Philo %ld, has Take right fork : %ld\n",time, philo->id, id);
+		printf("%ld %ld has taken a fork\n",time, philo->id);
 	}
 }
 
@@ -205,13 +210,41 @@ void	eating(t_philo *philo)
 	{
 		if(time - philo->last_meal_time > philo->data->ttd)
 		{
-			printf("------------------------> %ld , Philo %ld DIE , time from last meal %ld\n",time ,philo->id, time - philo->last_meal_time);
+			printf("------------------------> %ld , Philo %ld DIE , time from last meal %ld, ttd %ld\n",time ,philo->id, time - philo->last_meal_time, philo->data->ttd);
 			exit(1);
 		}
 		philo->last_meal_time = time;
-		printf("At :%ld   Philo %ld, Eating\n",time, philo->id);
+		printf("%ld %ld is eating\n",time, philo->id);
 		ft_usleep(philo->data->tte);
 	}
+}
+
+void	take_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 1)
+	{
+		take_right_fork(philo);
+		take_left_fork(philo);
+	}
+	else
+	{
+		take_left_fork(philo);
+		take_right_fork(philo);
+	}
+}
+
+void	put_forks(t_philo *philo)
+{
+	// if (philo->id % 2 == 1) // odd
+	// {
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->left_fork);
+	// }
+	// else // even
+	// {
+	// 	pthread_mutex_unlock(philo->left_fork);
+	// 	pthread_mutex_unlock(philo->right_fork);
+	// }	
 }
 
 void	*philosophy(void *infos) // id = 1
@@ -219,42 +252,20 @@ void	*philosophy(void *infos) // id = 1
 	t_philo	*philo;
 
 	philo = infos;
-	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->tte - 10);
+	if (philo->id % 2)
+		ft_usleep(1);
 	while (philo->data->die_flag)
 	{
-		if (philo->id % 2)
-		{
-			take_left_fork(philo);
-			take_right_fork(philo);
-		}
-		else
-		{
-			take_right_fork(philo);
-			take_left_fork(philo);
-		}
+		take_forks(philo);
 		eating(philo);
-		if (philo->id % 2)
-		{
-			pthread_mutex_unlock(philo->left_fork);
-			pthread_mutex_unlock(philo->right_fork);
-		}
-		else
-		{
-			pthread_mutex_unlock(philo->right_fork);
-			pthread_mutex_unlock(philo->left_fork);
-		}	
-		printf("At :%ld   Philo %ld, Sleeping\n",get_curr_time() - philo->data->start, philo->id);
+		put_forks(philo);
+		printf("%ld %ld is sleeping\n",get_curr_time() - philo->data->start, philo->id);
 		ft_usleep(philo->data->tts);
-		printf("At :%ld   Philo %ld, Thinking\n",get_curr_time() - philo->data->start, philo->id);
-		if(philo->id % 2)
-		{
-			long wait;
-
-			wait = (philo->data->ttd - ((get_curr_time() - philo->data->start) - philo->last_meal_time)) / 2;
-			ft_usleep(wait); 
-			// printf("wait %ld, pihilo %ld\n",wait ,philo->id);
-		}
+		printf("%ld %ld is thinking\n",get_curr_time() - philo->data->start, philo->id);
+		if(get_curr_time() - philo->last_meal_time < philo->data->ttd)
+			printf("SLEEP %ld, by %ld\n",philo->id, philo->data->tte / 2);
+		if(philo->data->num_of_philos % 2)
+			ft_usleep(1);
 	}
 	// take left and right forks if they are available
 	// eat
