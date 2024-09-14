@@ -6,7 +6,7 @@
 #    By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 18:07:11 by baouragh          #+#    #+#              #
-#    Updated: 2024/09/14 13:07:00 by baouragh         ###   ########.fr        #
+#    Updated: 2024/09/14 14:09:44 by baouragh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME			:= philo
 NAME_B			:= philo_bonus
 
 CC				:= cc
-CFLAGS			:= -Wall -Wextra -Werror -pthread -fsanitize=thread
+CFLAGS			:= -Wall -Wextra -Werror -pthread #-fsanitize=thread
 
 SRCS_M			:=	philo_m/philo.c philo_m/ft_isdigit.c philo_m/ft_atol.c
 SRCS_B			:=	philo_b/philo_bonus.c

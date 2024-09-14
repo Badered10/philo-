@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/14 13:21:30 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/14 14:03:00 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ typedef enum e_state
 	EATING,
 	SLEEPING,
 	THINKING,
-	DIE
+	DIE,
+	DONE
 }			t_state;
 
 typedef struct s_philo
