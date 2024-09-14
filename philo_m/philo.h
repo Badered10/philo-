@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/12 22:16:47 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/14 13:21:30 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,22 @@
 # endif
 
 typedef struct s_data	t_data;
+ 
+typedef enum e_state
+{
+	EATING,
+	SLEEPING,
+	THINKING,
+	DIE
+}			t_state;
 
 typedef struct s_philo
 {
 	long			id;
 	long			eaten_meals;
 	long			last_meal_time;
+	bool			full;
+	t_state			state;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
 	pthread_t		philo;
@@ -52,7 +62,7 @@ typedef struct s_data
 	long			tte;
 	long			tts;
 	pthread_mutex_t write;
-	pthread_mutex_t read;
+	pthread_t		scan;
 	time_t			start;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
