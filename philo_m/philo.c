@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 09:39:59 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/15 09:47:10 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,12 @@ t_data	*set_data(int argc, char **argv)
 	return (data);
 }
 
+void	put_forks(t_philo *philo)
+{
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->left_fork);
+}
+
 void	take_left_fork(t_philo *philo)
 {
 	time_t time;
@@ -260,7 +266,6 @@ void	take_right_fork(t_philo *philo)
 int	eating(t_philo *philo)
 {
 	time_t time;
-
 	
 	time = get_curr_time() - philo->data->start;
 	printf("%ld %ld is eating\n",time, philo->id);
@@ -268,7 +273,7 @@ int	eating(t_philo *philo)
 	philo->last_meal_time = time;
 	pthread_mutex_unlock(&philo->meal_m);
 	if (get_bool(&philo->data->scan, &philo->data->die_flag))
-		return (-1);
+		return (put_forks(philo), -1);
 	philo->eaten_meals++;
 	if (philo->eaten_meals == philo->data->num_of_meals)
 		philo->full = 1;
@@ -293,18 +298,11 @@ int	take_forks(t_philo *philo)
 	return (0);
 }
 
-void	put_forks(t_philo *philo)
-{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
-}
-
 void	*philosophy(void *infos)
 {
 	t_philo	*philo;
 
 	philo = infos;
-	
 	if (philo->id % 2)
 		ft_usleep(1, philo->data);
 	while (philo->full != 1)
@@ -312,10 +310,7 @@ void	*philosophy(void *infos)
 		if (take_forks(philo))
 			break;
 		if (eating(philo))
-		{
-			put_forks(philo);
 			break;
-		}
 		put_forks(philo);
 		if (philo->full == 1 ||
 				get_bool(&philo->data->scan, &philo->data->die_flag))
@@ -381,21 +376,13 @@ void	*scan_death(void *infos)
 		pthread_mutex_lock(&data->philos[i].meal_m);
 		diff = curr - data->philos[i].last_meal_time;
 		pthread_mutex_unlock(&data->philos[i].meal_m);
-		if(diff > data->ttd)
+		if (diff > data->ttd)
 		{
 			set_bool(&data->scan, &data->die_flag, 1);
 			printf("%ld %ld died\n",curr, data->philos[i].id);
-			printf("STOP ALL \n");
 			break;
 		}
-		// if (get_state(&data->state_m, &data->philos[i].state) == DIE)
-		// {
-		// 	// stop_all(data);
-		// 	set_bool(&data->scan, &data->die_flag, 1);
-		// 	printf("STOP ALL \n");
-		// 	break;
-		// }
-		if(all_done(data))
+		if (all_done(data))
 			break;
 		i++;
 		if (i == data->num_of_philos)
