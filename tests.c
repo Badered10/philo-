@@ -19,7 +19,7 @@
 
 
 
-time_t get_curr_time(void)
+time_t get_t(void)
 {
     time_t res;
     struct timeval tv;
@@ -57,9 +57,9 @@ int ft_costume_sleep(useconds_t usec)
 {
     time_t start;
 
-    start = get_curr_time();
+    start = get_t();
     usec /= 1000;
-    while(get_curr_time() - start < usec)
+    while(get_t() - start < usec)
     {
         ;
     }
@@ -71,12 +71,12 @@ void *show_time(void *args)
     int *count;
     time_t start;
 
-    start = get_curr_time();
+    start = get_t();
     count = args;
 
-    while(get_curr_time() - start < *count)
+    while(get_t() - start < *count)
     {
-        printf("%ld\n",get_curr_time());
+        printf("%ld\n",get_t());
     }
 
     return(NULL);
@@ -86,9 +86,9 @@ void *timer(void *args)
     (void)args;
 
     ft_costume_sleep(10000);
-    dprintf(2, "DONE %ld\n",get_curr_time());
+    dprintf(2, "DONE %ld\n",get_t());
     usleep(10000);
-    dprintf(2, "DONE %ld\n",get_curr_time());
+    dprintf(2, "DONE %ld\n",get_t());
 
     return (NULL);
     

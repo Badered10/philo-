@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 09:47:10 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/15 11:12:53 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	destroy_forks(t_data *data)
 	free(data->forks);
 }
 
-time_t	get_curr_time(void)
+time_t	get_t(void)
 {
 	struct timeval	tv;
 
@@ -75,10 +75,10 @@ void	ft_usleep(time_t time , t_data *data)
 {
 	time_t	start;
 
-	start = get_curr_time();
+	start = get_t();
 	while (1)
 	{
-		if (get_curr_time() - start >= time
+		if (get_t() - start >= time
 				|| get_bool(&data->scan, &data->die_flag))
 			break;
 		usleep(500);
@@ -248,7 +248,7 @@ void	take_left_fork(t_philo *philo)
 	time_t time;
 
 	pthread_mutex_lock(philo->left_fork);
-	time = get_curr_time() - philo->data->start;
+	time = get_t() - philo->data->start;
 	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
 		printf("%ld %ld has taken a fork\n",time, philo->id);
 }
@@ -258,7 +258,7 @@ void	take_right_fork(t_philo *philo)
 	time_t time;
 
 	pthread_mutex_lock(philo->right_fork);
-	time = get_curr_time() - philo->data->start;
+	time = get_t() - philo->data->start;
 	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
 		printf("%ld %ld has taken a fork\n",time, philo->id);
 }
@@ -267,17 +267,20 @@ int	eating(t_philo *philo)
 {
 	time_t time;
 	
-	time = get_curr_time() - philo->data->start;
+	if (take_forks(philo))
+		return (put_forks(philo), -1);
+	time = get_t() - philo->data->start;
 	printf("%ld %ld is eating\n",time, philo->id);
 	pthread_mutex_lock(&philo->meal_m);
 	philo->last_meal_time = time;
 	pthread_mutex_unlock(&philo->meal_m);
+	if (philo->eaten_meals == philo->data->num_of_meals)
+		philo->full = 1;
 	if (get_bool(&philo->data->scan, &philo->data->die_flag))
 		return (put_forks(philo), -1);
 	philo->eaten_meals++;
-	if (philo->eaten_meals == philo->data->num_of_meals)
-		philo->full = 1;
 	ft_usleep(philo->data->tte, philo->data);
+	put_forks(philo);
 	return (0);
 }
 
@@ -303,23 +306,21 @@ void	*philosophy(void *infos)
 	t_philo	*philo;
 
 	philo = infos;
+	if(philo->data->num_of_philos == 1)
 	if (philo->id % 2)
 		ft_usleep(1, philo->data);
 	while (philo->full != 1)
 	{
-		if (take_forks(philo))
-			break;
 		if (eating(philo))
 			break;
-		put_forks(philo);
 		if (philo->full == 1 ||
 				get_bool(&philo->data->scan, &philo->data->die_flag))
 			break;
-		printf("%ld %ld is sleeping\n",get_curr_time() - philo->data->start, philo->id);
+		printf("%ld %ld is sleeping\n",get_t() - philo->data->start, philo->id);
 		ft_usleep(philo->data->tts, philo->data);
 		if (get_bool(&philo->data->scan, &philo->data->die_flag))
 			break;
-		printf("%ld %ld is thinking\n",get_curr_time() - philo->data->start, philo->id);
+		printf("%ld %ld is thinking\n",get_t() - philo->data->start, philo->id);
 		if(philo->data->num_of_philos % 2)
 			ft_usleep(1, philo->data);
 	}
@@ -372,7 +373,7 @@ void	*scan_death(void *infos)
 	data = infos;
 	while(true)
 	{
-		curr = get_curr_time() - data->start;
+		curr = get_t() - data->start;
 		pthread_mutex_lock(&data->philos[i].meal_m);
 		diff = curr - data->philos[i].last_meal_time;
 		pthread_mutex_unlock(&data->philos[i].meal_m);
@@ -397,7 +398,7 @@ void	simulation(t_data *data)
 
 	i = 0;
 	data->die_flag = 0;
-	data->start = get_curr_time();
+	data->start = get_t();
 	while (i < data->num_of_philos)
 	{
 		pthread_create(&data->philos[i].philo, NULL, &philosophy, &data->philos[i]);
