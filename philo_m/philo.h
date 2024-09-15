@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/14 14:03:00 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/15 08:37:12 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_philo
 	t_state			state;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
+	pthread_mutex_t meal_m;
 	pthread_t		philo;
 	t_data			*data;
 }					t_philo;
@@ -62,8 +63,9 @@ typedef struct s_data
 	long			ttd;
 	long			tte;
 	long			tts;
-	pthread_mutex_t write;
-	pthread_t		scan;
+	pthread_mutex_t scan;
+	pthread_mutex_t state_m;
+	pthread_t		scan_t;
 	time_t			start;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
