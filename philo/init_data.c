@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:41:14 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 14:18:59 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 15:19:43 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ pthread_mutex_t	*create_forks(long np)
 	return (forks);
 }
 
-void	destroy_data(t_data *data)
+void	destroy_mutexs(t_data *data)
 {
 	pthread_mutex_destroy(&data->scan);
 	pthread_mutex_destroy(&data->state_m);
@@ -94,17 +94,17 @@ t_data	*set_data(int argc, char **argv)
 	data->tts = ft_atol(argv[4]);
 	data->num_of_meals = -10;
 	if (init_data_mutexs(data))
-		return (destroy_data(data), NULL);
+		return (destroy_mutexs(data), NULL);
 	if (argc == 6)
 		data->num_of_meals = ft_atol(argv[5]);
 	if (data->num_of_meals == -1 || data->num_of_philos == -1 || data->ttd == -1
 		|| data->tte == -1 || data->tts == -1)
-		return (destroy_data(data), NULL);
+		return (destroy_mutexs(data), NULL);
 	data->forks = create_forks(data->num_of_philos);
 	if (!data->forks)
-		return (destroy_data(data), NULL);
+		return (destroy_mutexs(data), NULL);
 	data->philos = create_philos(data);
 	if (!data->philos)
-		return (destroy_forks(data), destroy_data(data), NULL);
+		return (destroy_forks(data), destroy_mutexs(data), NULL);
 	return (data);
 }

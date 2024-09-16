@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:43:30 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 13:56:33 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 12:50:01 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	clean_up(t_data *data)
 {
 	destroy_forks(data);
 	free_philos(data);
-	destroy_data(data);
+	free(data);
 }
 
 time_t	get_t(void)

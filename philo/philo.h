@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 14:17:59 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 15:20:09 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int						ft_isdigit(int c);
 long					ft_atol(const char *str);
 t_data					*set_data(int argc, char **argv);
 int						init_data_mutexs(t_data *data);
-void					destroy_data(t_data *data);
+void					destroy_mutexs(t_data *data);
 pthread_mutex_t			*create_forks(long np);
 t_philo					*create_philos(t_data *data);
 time_t					get_t(void);
