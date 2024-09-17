@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 14:02:53 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:42:05 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,27 +65,26 @@ void	*philosophy(void *infos)
 	t_philo	*philo;
 
 	philo = infos;
-	if (philo->data->num_of_philos == 1)
-		if (philo->id % 2)
-			ft_usleep(1, philo->data);
+	if (philo->id % 2)
+		ft_usleep(1, philo->data);
 	while (philo->full != 1)
 	{
 		if (eating(philo))
 			break ;
-		if (philo->full == 1 || get_bool(&philo->data->scan,
-				&philo->data->die_flag))
-			break ;
+		// if (philo->full == 1 || get_bool(&philo->data->scan,
+		// 		&philo->data->die_flag))
+		// 	break ;
 		printf("%ld %ld is sleeping\n", get_t() - philo->data->start,
 			philo->id);
 		ft_usleep(philo->data->tts, philo->data);
-		if (get_bool(&philo->data->scan, &philo->data->die_flag))
-			break ;
+		// if (get_bool(&philo->data->scan, &philo->data->die_flag))
+		// 	break ;
 		printf("%ld %ld is thinking\n", get_t() - philo->data->start,
 			philo->id);
 		if (philo->data->num_of_philos % 2)
 			ft_usleep(1, philo->data);
 	}
-	set_state(&philo->data->state_m, &philo->state, DONE);
+	set_state(&philo->state_m, &philo->state, DONE);
 	return (NULL);
 }
 

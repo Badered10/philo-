@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 15:03:35 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:47:04 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 # include <sys/time.h>
 # include <unistd.h>
 #include <semaphore.h>
+#include <sys/wait.h>
+#include <fcntl.h> 
+#include <sys/stat.h> 
 
 # ifndef ERR_MSG
 #  define ERR_MSG ", Must be less than or equal to LONG_MAX"
@@ -41,7 +44,7 @@ typedef enum e_state
 
 typedef struct s_philo
 {
-	sem_t				p_semaphore;
+	sem_t				*p_semaphore;
 	pthread_t			scanner;
 	long				id;
 	long				eaten_meals;
@@ -53,7 +56,7 @@ typedef struct s_philo
 
 typedef struct s_data
 {
-	sem_t				ps_semaphore;
+	sem_t				*ps_semaphore;
 	bool				die_flag;
 	long				num_of_philos;
 	long				num_of_meals;
@@ -85,5 +88,6 @@ void	init_philo(t_data *data , int x);
 t_data	*set_data(int argc, char **argv);
 int		ft_isdigit(int c);
 long	ft_atol(const char *str);
+char	*ft_itoa(int n);
 
 #endif

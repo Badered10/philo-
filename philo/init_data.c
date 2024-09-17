@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:41:14 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 15:19:43 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:27:39 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,12 @@ pthread_mutex_t	*create_forks(long np)
 void	destroy_mutexs(t_data *data)
 {
 	pthread_mutex_destroy(&data->scan);
-	pthread_mutex_destroy(&data->state_m);
 	free(data);
 }
 
 int	init_data_mutexs(t_data *data)
 {
 	if (pthread_mutex_init(&data->scan, NULL))
-		return (printf("Faild to init a mutex\n"), 1);
-	if (pthread_mutex_init(&data->state_m, NULL))
 		return (printf("Faild to init a mutex\n"), 1);
 	return (0);
 }

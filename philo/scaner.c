@@ -6,13 +6,13 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 13:49:15 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:38:18 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	all_done(t_data *data)
+int	all_done(t_data *data) // to fix
 {
 	int	i;
 	int	count;
@@ -21,10 +21,10 @@ int	all_done(t_data *data)
 	i = 0;
 	while (i < data->num_of_philos)
 	{
-		pthread_mutex_lock(&data->state_m);
+		pthread_mutex_lock(&data->philos[i].state_m);
 		if (data->philos[i].state == DONE)
 			count++;
-		pthread_mutex_unlock(&data->state_m);
+		pthread_mutex_unlock(&data->philos[i].state_m);
 		i++;
 	}
 	if (count == data->num_of_philos)
@@ -63,6 +63,7 @@ void	*scan_death(void *infos)
 		i++;
 		if (i == data->num_of_philos)
 			i = 0;
+		usleep(1000);
 	}
 	return (NULL);
 }

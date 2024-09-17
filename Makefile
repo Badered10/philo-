@@ -6,13 +6,13 @@
 #    By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 18:07:11 by baouragh          #+#    #+#              #
-#    Updated: 2024/09/16 15:17:33 by baouragh         ###   ########.fr        #
+#    Updated: 2024/09/16 16:49:14 by baouragh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
-NAME			:= philo.o
-NAME_B			:= philo_bonus.o
+NAME			:= philo_m
+NAME_B			:= philo_b
 
 CC				:= cc
 CFLAGS			:= -Wall -Wextra -Werror -pthread #-fsanitize=thread
@@ -25,7 +25,8 @@ SRCS_B			:=	philo_bonus/philo_bonus.c philo_bonus/ft_isdigit_bonus.c \
 					philo_bonus/ft_atol_bonus.c \
 					philo_bonus/simulation_utils_bonus.c \
 					philo_bonus/set_and_get_bonus.c philo_bonus/scaner_bonus.c \
-					philo_bonus/init_utils_bonus.c philo_bonus/init_data_bonus.c
+					philo_bonus/init_utils_bonus.c philo_bonus/init_data_bonus.c \
+					philo_bonus/ft_itoa_bonus.c
 
 					
 OBJS_M			:=	$(SRCS_M:.c=.o)

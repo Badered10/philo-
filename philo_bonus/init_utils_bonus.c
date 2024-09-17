@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:43:30 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 14:59:41 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:03:36 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	clean_up(t_data *data)
 {
+	sem_close(data->ps_semaphore);
+	sem_unlink("sem");
 	free(data);
 }
 
