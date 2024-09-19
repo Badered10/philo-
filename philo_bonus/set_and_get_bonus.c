@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:46:41 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 15:57:29 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/19 15:10:24 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	set_state(sem_t *semaphore, t_state *state, int new)
 	*state = new;
 	sem_post(semaphore);
 }
+
 
 void	ft_usleep(time_t time, t_data *data)
 {

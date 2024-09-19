@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:46:41 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/15 14:20:05 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/19 15:10:39 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	ft_usleep(time_t time, t_data *data)
 	start = get_t();
 	while (1)
 	{
-		if (get_t() - start >= time || get_bool(&data->scan, &data->die_flag))
+		if (get_t() - start >= time || get_bool(data->philos.p_semaphore, &data->die_flag))
 			break ;
 		usleep(500);
 	}
