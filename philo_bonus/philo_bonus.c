@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 20:05:36 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/21 22:17:19 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,21 +58,21 @@ int	eating(t_philo *philo)
 	return (0);
 }
 
+void	philo_sem_int(t_philo *philo , char *sem_name)
+{
+	sem_unlink(sem_name);
+	philo->full = sem_open(sem_name, O_CREAT | O_EXCL, 0644 , 1);
+	if (philo->full == SEM_FAILED)
+	{
+		printf("FAILD TO CREAT SEM\n");
+		sem_close(philo->full);
+		exit(1);
+	}
+}
+
 void	philosophy(t_philo	*philo)
 {
-	char *name;
-
-	name = ft_itoa(philo->id);
-	philo->p_semaphore = sem_open(name, O_CREAT | S_IRUSR | S_IWUSR, 0 , 1);
-	if (philo->p_semaphore == SEM_FAILED)
-	{
-		perror("child");
-		unlink(name);
-		free(name);
-		printf("FAILD TO CREAT SEM\n");
-		sem_close(philo->data->ps_semaphore);
-		exit(0);
-	}
+	philo_sem_int(philo, ft_itoa(philo->id));
 	pthread_create(&philo->scanner, NULL, &scan_death, &philo);
 	if (philo->id % 2)
 		ft_usleep(1, philo->data);
@@ -89,9 +89,9 @@ void	philosophy(t_philo	*philo)
 			ft_usleep(1, philo->data);
 	}
 	pthread_join(philo->scanner, NULL);
-	sem_unlink(name);
-	free(name);
-	sem_close(philo->data->ps_semaphore);
+	sem_unlink(philo->full_name);
+	free(philo->full_name);
+	sem_close(philo->full);
 	exit (0);
 }
 
@@ -104,7 +104,6 @@ void	simulation(t_data *data)
 	id = 0;
 	i = 0;
 	exit = 200;
-	data->die_flag = 0;
 	data->start = get_t();
 	while (i < data->num_of_philos)
 	{

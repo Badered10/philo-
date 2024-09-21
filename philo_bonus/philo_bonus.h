@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 16:47:04 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/21 22:20:56 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,18 @@
 #  define ALLOC_ERR "Allocation faild\n"
 # endif
 
+
+# ifndef SEM_NAME_0
+#  define SEM_NAME_0 "forks"
+# endif
+# ifndef SEM_NAME_1
+#  define SEM_NAME_1 "1"
+# endif
+# ifndef SEM_NAME_2
+#  define SEM_NAME_2 "2"
+# endif
+
+
 typedef struct s_data	t_data;
 
 typedef enum e_state
@@ -42,9 +54,19 @@ typedef enum e_state
 	DONE
 }						t_state;
 
+typedef struct s_wait
+{
+    int     *pids;
+    sem_t   *died;
+    bool     flag;
+}					t_wait;
+
 typedef struct s_philo
 {
-	sem_t				*p_semaphore;
+	sem_t				*full;
+	sem_t				*meal;
+	char				*full_name;
+	char				*meal_name;
 	pthread_t			scanner;
 	long				id;
 	long				eaten_meals;
@@ -56,8 +78,8 @@ typedef struct s_philo
 
 typedef struct s_data
 {
-	sem_t				*ps_semaphore;
-	bool				die_flag;
+	sem_t				*died;
+	sem_t				*forks;
 	long				num_of_philos;
 	long				num_of_meals;
 	long				ttd;
@@ -89,5 +111,7 @@ t_data	*set_data(int argc, char **argv);
 int		ft_isdigit(int c);
 long	ft_atol(const char *str);
 char	*ft_itoa(int n);
+int		ft_strlen(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
 
 #endif
