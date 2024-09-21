@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:06:23 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/19 17:22:29 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/21 10:20:21 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,14 @@
 typedef struct s_data
 {
     char                *name;
-    sem_t               *sem_p;
-    sem_t               *sem;
+    char                *dead_name;
+    sem_t               *sem_p; // 
+    sem_t               *died; //
+    sem_t               *full; //
+    sem_t               *sem; // mutex like
 	bool				die_flag;
     long                id;
+    long                meal_count;
 	long				num_of_meals;
     long                last_meal_time;
 	long				ttd; // 
@@ -48,7 +52,9 @@ typedef struct s_wait
     int *pids;
 }					t_wait;
 
-#define SEM_NAME "oskd123123d2sd"
+#define SEM_NAME_0 "1"
+#define SEM_NAME_1 "2"
+#define SEM_NAME_2 "3"
 
 static int	lenth(int n)
 {
@@ -133,6 +139,11 @@ void	ft_usleep(time_t time)
 	}
 }
 
+int get_value(sem_t *sem)
+{
+    // printf("%ld\n", *(long int *)sem);
+    return(*(long int *)sem);
+}
 void *cheak_death(void *infos)
 {
     t_data *data;
@@ -144,9 +155,13 @@ void *cheak_death(void *infos)
         if (curr - data->last_meal_time > data->ttd)
         {
             printf("%ld %ld is dead\n", curr, data->id);
-            sem_close(data->sem_p);
-            exit(200);
+            sem_wait(data->died);
+            // sem_close(data->sem_p);
+            // exit(200);
+            break;
         }
+        if(!get_value(data->full))
+            break;
     }
     return (NULL);
 }
@@ -170,46 +185,62 @@ void *check_wait(void *data)
     }
     return (NULL);
 }
+
+
 int main()
 {
     sem_t *sem1;
+    sem_t *died;
     int childs[4];
     int state;
-    pthread_t thread_p[4];
+    // pthread_t thread_p[4];
     int x = 0;
 
     state = 0;
-    unlink(SEM_NAME);
-    sem1 = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0644, 4);
+    sem_unlink(SEM_NAME_0);
+    sem_unlink(SEM_NAME_1);
+    sem1 = sem_open(SEM_NAME_0, O_CREAT , 0644, 4);
     if (sem1 == SEM_FAILED)
     {
         perror("sem_open failed");
         exit(EXIT_FAILURE);
     }
-    while(x < 4)
+    died = sem_open(SEM_NAME_1, O_CREAT , 0644, 1);
+    if (died == SEM_FAILED)
+    {
+        perror("sem_open failed");
+        exit(EXIT_FAILURE);
+    }
+    while(x < 4) // 
     {
         childs[x] = fork();
-
+        printf("process : %d, int : %d\n",getpid(), childs[x]);
         if (childs[x] < 0) 
         {
             perror("fork failed");
             sem_close(sem1);
-            sem_unlink(SEM_NAME);
+            sem_unlink(SEM_NAME_0);
             exit(EXIT_FAILURE);
         }
         if (childs[x] == 0) 
         {
-            pthread_t   thread;    
+            pthread_t   thread; // thread check death
             t_data      data;
+            sem_t       *full;
 
+            sem_unlink(ft_itoa(x + 200));
+            full = sem_open(ft_itoa(x + 200), O_CREAT , 0644, 1);
             data.sem_p = sem1;
+            data.died = died;
             data.die_flag = 0;
-            data.num_of_meals = 3;
-            data.ttd = 200;
-            data.tte = 1000;
-            data.tts = 100;
+            data.full = full;
+            data.num_of_meals = 10;
+            data.ttd = 180;
+            data.tte = 60;
+            data.tts = 60;
             data.last_meal_time = 0;
             data.id = x + 1;
+            data.meal_count = 0;
             data.start = get_t();
             pthread_create(&thread, NULL, &cheak_death, &data);
             pthread_detach(thread);
@@ -218,51 +249,79 @@ int main()
             data.start = get_t();
             while(1)
             {
-                if (sem_wait(sem1) < 0)
+                if (sem_wait(sem1) < 0) // take fork value --
                 {
                     perror("sem_wait failed");
                     exit(EXIT_FAILURE);
                 }
                 printf("%ld %ld take a fork\n", get_t() - data.start, data.id);
-                if (sem_wait(sem1) < 0)
+                if (sem_wait(sem1) < 0) // take fork value --
                 {
                     perror("sem_wait failed");
                     exit(EXIT_FAILURE);
                 }
                 printf("%ld %ld take a fork\n", get_t() - data.start, data.id);
-                data.last_meal_time = get_t() - data.start;
+                data.last_meal_time = get_t() - data.start; // store last meal time
                 printf("%ld %ld is eating\n", get_t() - data.start, data.id);
+                data.meal_count++;
                 ft_usleep(data.tte);
-                sem_post(sem1);
-                sem_post(sem1);
+                sem_post(sem1); // value ++
+                sem_post(sem1); // value ++
+                if (data.meal_count == data.num_of_meals)
+                {
+                    sem_wait(full);
+                    break;
+                }
                 printf("%ld %ld is sleeping\n", get_t() - data.start, data.id);
                 ft_usleep(data.tts);
                 printf("%ld %ld is thinking\n", get_t() - data.start, data.id);
+               	if (4 % 2)
+			        ft_usleep(1);
             }
             sem_close(sem1);
+            sem_close(full);
+            sem_close(died);
+            sem_unlink(ft_itoa(x + 200));
             exit(0);
         }
         x++;
     }
-    x = 0;
-    t_wait wait[4];
-
-    while(x < 4)
+    
+    while(waitpid(-1, NULL, 0) != -1)
     {
-        wait[x].pid = childs[x];
-        wait[x].pids = childs;
-        pthread_create(&thread_p[x], NULL, &check_wait, &wait[x]);
-        x++;
+        if(get_value(died) == 0)
+        {
+            printf("TO KILL\n");
+            int x = 0;
+            while(x < 4)
+            {
+                kill(childs[x] , SIGKILL);
+                x++;
+            }
+            break;
+        }
     }
-    x = 0;
-    while(x < 4)
-    {
-        pthread_join(thread_p[x], NULL);
-        printf("JOIN\n");
-        x++;
-    } 
+    // x = 0;
+    // t_wait wait[4]; // id = pid, int *pids;
+
+    // while(x < 4)
+    // {
+    //     wait[x].pid = childs[x]; // pid to wait
+    //     wait[x].pids = childs; // all pids in case of kill
+    //     pthread_create(&thread_p[x], NULL, &check_wait, &wait[x]);
+    //     x++;
+    // }
+    // x = 0;
+    // while(x < 4)
+    // {
+    //     pthread_join(thread_p[x], NULL);
+    //     printf("JOIN\n");
+    //     x++;
+    // } 
     printf("---------------> DONE");
     sem_close(sem1);
-    sem_unlink(SEM_NAME);
+    sem_close(died);
+    sem_unlink(SEM_NAME_0);
+    sem_unlink(SEM_NAME_1);
     return 0;
 }
