@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 15:56:53 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 18:59:28 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 
 void	put_forks(t_philo *philo)
 {
-	sem_post(philo->data->ps_semaphore);
-	sem_post(philo->data->ps_semaphore);
+	sem_post(philo->data->forks->sem);
+	sem_post(philo->data->forks->sem);
 }
 
 void	take_fork(t_philo *philo)
 {
 	time_t	time;
 
-	sem_wait(philo->data->ps_semaphore);
+	sem_wait(philo->data->forks->sem);
 	time = get_t() - philo->data->start;
-	if (!get_bool(philo->p_semaphore, &philo->data->die_flag))
+	if (!get_bool(philo->value->sem, &philo->die_flag))
 		printf("%ld %ld has taken a fork\n", time, philo->id);
 }
 
 int	take_forks(t_philo *philo)
 {
-	if (get_bool(philo->p_semaphore, &philo->data->die_flag))
+	if (get_bool(philo->value->sem, &philo->die_flag))
 		return (-1);
 	if (philo->data->num_of_philos != 1)
 	{
@@ -41,7 +41,7 @@ int	take_forks(t_philo *philo)
 	else
 	{
 		take_fork(philo);
-		while ((!get_bool(philo->p_semaphore, &philo->data->die_flag)))
+		while ((!get_bool(philo->value->sem, &philo->die_flag)))
 			;
 		return (-1);
 	}

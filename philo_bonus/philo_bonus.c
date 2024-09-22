@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/21 22:17:19 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 19:13:17 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,37 +46,57 @@ int	eating(t_philo *philo)
 	if (take_forks(philo))
 		return (put_forks(philo), -1);
 	time = get_t() - philo->data->start;
+	sem_wait(philo->meal->sem);
 	philo->last_meal_time = time;
+	sem_post(philo->meal->sem);
 	printf("%ld %ld is eating\n", time, philo->id);
-	sem_wait(philo->p_semaphore);
 	philo->eaten_meals++;
-	sem_post(philo->p_semaphore);
 	if (philo->eaten_meals == philo->data->num_of_meals)
-		philo->full = 1;
+		philo->full_flag = 1;
 	ft_usleep(philo->data->tte, philo->data);
 	put_forks(philo);
 	return (0);
 }
 
-void	philo_sem_int(t_philo *philo , char *sem_name)
+
+int	ft_sem_open(t_data *data, char *sem_name, t_nsem *sem, int id)
 {
+	char *id_str;
+
+	id_str = ft_itoa(id);
+	add_address(&data->list, id_str);
+	sem_name = ft_strjoin(sem_name, id_str);
+	add_address(&data->list, sem_name);
+	sem->name = sem_name;
 	sem_unlink(sem_name);
-	philo->full = sem_open(sem_name, O_CREAT | O_EXCL, 0644 , 1);
-	if (philo->full == SEM_FAILED)
+	sem->sem = sem_open(sem_name, O_CREAT | O_EXCL, 0644 , 1);
+	if (sem->sem == SEM_FAILED)
 	{
 		printf("FAILD TO CREAT SEM\n");
-		sem_close(philo->full);
-		exit(1);
+		return (-1);
 	}
+	return (0);
+}
+
+int	open_sems(t_philo *philo)
+{
+	if (ft_sem_open(philo->data, "full", philo->full, philo->id))
+	return (-1);
+	if (ft_sem_open(philo->data, "meal", philo->meal, philo->id))
+	return (-1);
+	if (ft_sem_open(philo->data, "value", philo->value, philo->id))
+	return (-1);
+	return (0);
 }
 
 void	philosophy(t_philo	*philo)
 {
-	philo_sem_int(philo, ft_itoa(philo->id));
+	if (open_sems(philo))
+		clean_up(philo->data, 1);
 	pthread_create(&philo->scanner, NULL, &scan_death, &philo);
 	if (philo->id % 2)
 		ft_usleep(1, philo->data);
-	while (philo->full != 1)
+	while (philo->full_flag != 1)
 	{
 		if (eating(philo))
 			break ;
@@ -89,33 +109,66 @@ void	philosophy(t_philo	*philo)
 			ft_usleep(1, philo->data);
 	}
 	pthread_join(philo->scanner, NULL);
-	sem_unlink(philo->full_name);
-	free(philo->full_name);
-	sem_close(philo->full);
-	exit (0);
+	clean_up(philo->data, 0);
+}
+
+int get_value(sem_t *from , sem_t *garde)
+{
+    long int value;
+
+    sem_wait(garde);
+    value = *(long int *)from;
+    sem_post(garde);
+    return (value);
+}
+
+void *check_wait(void *data)
+{
+    t_wait *wait;
+
+    wait = data;
+    while(get_bool(wait->sh_sem, &wait->stop))
+    {
+        if(get_value(wait->died, wait->sh_sem) == 0)
+        {
+            printf("TO KILL\n");
+            int x = 0;
+            while(x < 4)
+            {
+                printf("%d\n",wait->pids[x]);
+                kill(wait->pids[x] , SIGKILL);
+                x++;
+            }
+            break;
+        }  
+    }
+    return (NULL);
 }
 
 void	simulation(t_data *data)
 {
 	int	i;
-	int	id;
-	int exit;
+	int	pids[data->num_of_philos];
+	t_wait wait;
+	pthread_t thread;
 	
-	id = 0;
 	i = 0;
-	exit = 200;
 	data->start = get_t();
 	while (i < data->num_of_philos)
 	{
 		init_philo(data , i);
-		id = fork();
-		if (id == 0)
+		pids[i] = fork();
+		if (pids[i] == 0)
 			philosophy(&data->philos);
 		i++;
 	}
-	while(waitpid(-1, &exit, 0) != -1 && exit != 1)
-	;
-	printf("DONE\n");
+	wait.stop = 1;
+    pthread_create(&thread, NULL, &check_wait, &wait);
+    while(waitpid(-1, NULL, 0) != -1)
+    ;
+    wait.stop = 0;
+    printf("---------------> start JOINING\n");
+    pthread_join(thread, NULL);
 }
 
 int	main(int argc, char **argv)
@@ -129,5 +182,5 @@ int	main(int argc, char **argv)
 		return (2);
 	if (data->num_of_meals != 0)
 		simulation(data);
-	clean_up(data);
+	clean_up(data, 0);
 }

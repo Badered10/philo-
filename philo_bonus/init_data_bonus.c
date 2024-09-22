@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:41:14 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/21 22:06:55 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 19:21:58 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,23 @@
 
 void	init_philo(t_data *data , int x)
 {
-	data->philos.eaten_meals = 0;
-	data->philos.state = 0;
-	data->philos.full = 0;
-	data->philos.last_meal_time = 0;
 	data->philos.id = x + 1;
+}
+
+void	data_init(t_data **data, int argc, char **argv)
+{
+	(*data)->died = NULL;
+	(*data)->forks = NULL;
+	(*data)->sh_value = NULL;
+	(*data)->list.address = &(*data);
+	(*data)->list.next = NULL;
+	(*data)->num_of_philos = ft_atol(argv[1]);
+	(*data)->ttd = ft_atol(argv[2]);
+	(*data)->tte = ft_atol(argv[3]);
+	(*data)->tts = ft_atol(argv[4]);
+	(*data)->num_of_meals = -10;
+	if (argc == 6)
+		(*data)->num_of_meals = ft_atol(argv[5]);
 }
 
 t_data	*set_data(int argc, char **argv)
@@ -28,20 +40,17 @@ t_data	*set_data(int argc, char **argv)
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
-	data->num_of_philos = ft_atol(argv[1]);
-	data->ttd = ft_atol(argv[2]);
-	data->tte = ft_atol(argv[3]);
-	data->tts = ft_atol(argv[4]);
-	data->num_of_meals = -10;
-	if (argc == 6)
-		data->num_of_meals = ft_atol(argv[5]);
+	data_init(&data, argc, argv);
 	if (data->num_of_meals == -1 || data->num_of_philos == -1 || data->ttd == -1
 		|| data->tte == -1 || data->tts == -1)
 		return (free(data), NULL);
+	memset(&data->philos, 0, sizeof(t_philo));
 	data->philos.data = data;
-	sem_unlink(SEM_NAME_0);
-	data->forks = sem_open(SEM_NAME_0,  O_CREAT | O_EXCL, 0644 , data->num_of_philos);
-	if (data->forks == SEM_FAILED)
+	if(ft_sem_open(data , SEM_NAME_0, data->forks, -1))
 		return (printf("sem_open faild\n"), free(data), NULL);
+	if(ft_sem_open(data , SEM_NAME_1, data->died, -1))
+		return (printf("sem_open faild\n"), clean_up(data, 1), NULL);
+	if(ft_sem_open(data , SEM_NAME_2, data->sh_value, -1))
+		return (printf("sem_open faild\n"), clean_up(data, 1), NULL);
 	return (data);
 }
