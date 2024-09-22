@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 19:02:30 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:36:02 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	*scan_death(void *infos)
     data = infos;
     while(1)
     {
-        time_t curr = get_t() - data->start;
+        time_t curr = get_t() - data->philos.start;
         sem_wait(data->philos.meal->sem);
         if (curr - data->philos.last_meal_time > data->ttd)
         {

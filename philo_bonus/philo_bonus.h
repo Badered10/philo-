@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 19:26:48 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:22:38 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct s_philo
 	bool				full_flag;
 	bool				die_flag;
 	t_state				state;
+	time_t				start;
 	t_data				*data;
 }						t_philo;
 
@@ -101,7 +102,6 @@ typedef struct s_data
 	long				ttd;
 	long				tte;
 	long				tts;
-	time_t				start;
 	t_philo				philos;
 }						t_data;
 
@@ -127,10 +127,11 @@ long	ft_atol(const char *str);
 char	*ft_itoa(int n);
 int		ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
-int		ft_sem_open(t_data *data, char *sem_name, t_nsem *sem, int id);
-void    add_address(t_garbage **list, t_garbage *node);
+int		ft_sem_open(t_data *data, char *sem_name, t_nsem **sem, int id);
+void    add_address(t_garbage **list, void *address);
 void    free_garbage(t_garbage *list);
 int 	get_value(sem_t *from , sem_t *garde);
 void	data_init(t_data **data, int argc, char **argv);
+int		ft_sem_forks(t_data *data, char *sem_name, t_nsem **sem, int id);
 
 #endif

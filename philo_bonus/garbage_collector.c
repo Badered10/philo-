@@ -6,13 +6,27 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 17:58:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 19:26:59 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 21:36:54 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-t_garbage   *new_node(void   *address)
+void    add_back(t_garbage **list, t_garbage *node)
+{
+    t_garbage   *tmp;
+    t_garbage   *last;
+
+    tmp = *list;
+    while (tmp)
+    {
+        last = tmp;
+        tmp = tmp->next;
+    }
+    last->next = node;
+}
+
+t_garbage   *new_node(void *address)
 {
     t_garbage *res;
 
@@ -21,6 +35,7 @@ t_garbage   *new_node(void   *address)
         return (NULL);
     res->address = address;
     res->next = NULL;
+    return (res);
 }
 
 void    free_garbage(t_garbage *list)
@@ -32,15 +47,12 @@ void    free_garbage(t_garbage *list)
     }
 }
 
-void    add_address(t_garbage **list, t_garbage *node)
+void    add_address(t_garbage **list, void *address)
 {
     if (!list || !address)
         return;
     if (!*list)
-    {
-        *list = address;
-        (*list)->next = NULL;
-    }
-    (*list)->next = address;
-    (*list)->next->next = NULL;
+        *list = new_node(address);
+    else
+        add_back(list, new_node(address));
 }

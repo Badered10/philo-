@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:46:41 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 18:59:08 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:42:52 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,19 @@ void	set_state(sem_t *semaphore, t_state *state, int new)
 
 void	ft_usleep(time_t time, t_data *data)
 {
+	(void)data;
 	time_t	start;
 
+	printf("ENTER FT_USLEEP \n");
 	start = get_t();
 	while (1)
 	{
-		if (get_t() - start >= time 
-				|| get_bool(data->philos.value->sem, &data->philos.die_flag))
+		// if (get_t() - start >= time || get_bool(data->philos.value->sem, &data->philos.die_flag))
+		if (get_t() - start >= time)
+		{
+				printf("OUT FT_USLEEP \n");
 			break ;
+		}
 		usleep(500);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 19:13:17 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:39:02 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	eating(t_philo *philo)
 
 	if (take_forks(philo))
 		return (put_forks(philo), -1);
-	time = get_t() - philo->data->start;
+	time = get_t() - philo->start;
 	sem_wait(philo->meal->sem);
 	philo->last_meal_time = time;
 	sem_post(philo->meal->sem);
@@ -53,24 +53,45 @@ int	eating(t_philo *philo)
 	philo->eaten_meals++;
 	if (philo->eaten_meals == philo->data->num_of_meals)
 		philo->full_flag = 1;
+	printf("YOOOOOOOOOOOOOOOOOOOOOOO\n");
 	ft_usleep(philo->data->tte, philo->data);
 	put_forks(philo);
 	return (0);
 }
 
-
-int	ft_sem_open(t_data *data, char *sem_name, t_nsem *sem, int id)
+int	ft_sem_forks(t_data *data, char *sem_name, t_nsem **sem, int id)
 {
 	char *id_str;
+	char *name;
 
 	id_str = ft_itoa(id);
 	add_address(&data->list, id_str);
-	sem_name = ft_strjoin(sem_name, id_str);
-	add_address(&data->list, sem_name);
-	sem->name = sem_name;
-	sem_unlink(sem_name);
-	sem->sem = sem_open(sem_name, O_CREAT | O_EXCL, 0644 , 1);
-	if (sem->sem == SEM_FAILED)
+	name = ft_strjoin(sem_name, id_str);
+	add_address(&data->list, name);
+	(*sem)->name = name;
+	sem_unlink(name);
+	(*sem)->sem = sem_open(name, O_CREAT | O_EXCL, 0644 , id);
+	if ((*sem)->sem == SEM_FAILED)
+	{
+		printf("FAILD TO CREAT SEM\n");
+		return (-1);
+	}
+	return (0);
+}
+
+int	ft_sem_open(t_data *data, char *sem_name, t_nsem **sem, int id)
+{
+	char *id_str;
+	char *name;
+
+	id_str = ft_itoa(id);
+	add_address(&data->list, id_str);
+	name = ft_strjoin(sem_name, id_str);
+	add_address(&data->list, name);
+	(*sem)->name = name;
+	sem_unlink(name);
+	(*sem)->sem = sem_open(name, O_CREAT | O_EXCL, 0644 , 1);
+	if ((*sem)->sem == SEM_FAILED)
 	{
 		printf("FAILD TO CREAT SEM\n");
 		return (-1);
@@ -80,11 +101,14 @@ int	ft_sem_open(t_data *data, char *sem_name, t_nsem *sem, int id)
 
 int	open_sems(t_philo *philo)
 {
-	if (ft_sem_open(philo->data, "full", philo->full, philo->id))
+	philo->full = malloc(sizeof(t_nsem));
+	philo->meal = malloc(sizeof(t_nsem));
+	philo->value = malloc(sizeof(t_nsem));
+	if (ft_sem_open(philo->data, "full", &philo->full, philo->id))
 	return (-1);
-	if (ft_sem_open(philo->data, "meal", philo->meal, philo->id))
+	if (ft_sem_open(philo->data, "meal", &philo->meal, philo->id))
 	return (-1);
-	if (ft_sem_open(philo->data, "value", philo->value, philo->id))
+	if (ft_sem_open(philo->data, "value", &philo->value, philo->id))
 	return (-1);
 	return (0);
 }
@@ -93,22 +117,29 @@ void	philosophy(t_philo	*philo)
 {
 	if (open_sems(philo))
 		clean_up(philo->data, 1);
+	// sem_wait(philo->meal->sem);
+	philo->start = get_t();
 	pthread_create(&philo->scanner, NULL, &scan_death, &philo);
 	if (philo->id % 2)
 		ft_usleep(1, philo->data);
+	philo->start = get_t();
 	while (philo->full_flag != 1)
 	{
 		if (eating(philo))
+		{
+			printf("BREAKED\n");
 			break ;
-		printf("%ld %ld is sleeping\n", get_t() - philo->data->start,
+		}
+		printf("%ld %ld is sleeping\n", get_t() - philo->start,
 			philo->id);
 		ft_usleep(philo->data->tts, philo->data);
-		printf("%ld %ld is thinking\n", get_t() - philo->data->start,
+		printf("%ld %ld is thinking\n", get_t() - philo->start,
 			philo->id);
 		if (philo->data->num_of_philos % 2)
 			ft_usleep(1, philo->data);
 	}
 	pthread_join(philo->scanner, NULL);
+	printf("DONE, FROM %d \n", getpid());
 	clean_up(philo->data, 0);
 }
 
@@ -129,7 +160,7 @@ void *check_wait(void *data)
     wait = data;
     while(get_bool(wait->sh_sem, &wait->stop))
     {
-        if(get_value(wait->died, wait->sh_sem) == 0)
+        if (get_value(wait->died, wait->sh_sem) == 0)
         {
             printf("TO KILL\n");
             int x = 0;
@@ -153,7 +184,6 @@ void	simulation(t_data *data)
 	pthread_t thread;
 	
 	i = 0;
-	data->start = get_t();
 	while (i < data->num_of_philos)
 	{
 		init_philo(data , i);
@@ -162,11 +192,14 @@ void	simulation(t_data *data)
 			philosophy(&data->philos);
 		i++;
 	}
+	wait.sh_sem = data->sh_value->sem;
+	wait.died = data->died->sem;
 	wait.stop = 1;
     pthread_create(&thread, NULL, &check_wait, &wait);
-    while(waitpid(-1, NULL, 0) != -1)
-    ;
     wait.stop = 0;
+	while (waitpid(-1, NULL, 0) != -1)
+	;
+	printf("---------------> CHILDS DONE\n");
     printf("---------------> start JOINING\n");
     pthread_join(thread, NULL);
 }
