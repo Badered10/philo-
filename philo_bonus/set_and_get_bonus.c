@@ -6,27 +6,45 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:46:41 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 22:42:52 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/23 20:58:37 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-bool	get_bool(sem_t *semaphore, bool *die_flag)
+bool	get_bool(sem_t *semaphore, bool *varible)
 {
 	bool	res;
 
 	res = 0;
 	sem_wait(semaphore);
-	res = *die_flag;
+	res = *varible;
 	sem_post(semaphore);
 	return (res);
 }
 
-void	set_bool(sem_t *semaphore, bool *die_flag, bool val)
+void	set_bool(sem_t *semaphore, bool *varible, bool val)
 {
 	sem_wait(semaphore);
-	*die_flag = val;
+	*varible = val;
+	sem_post(semaphore);
+}
+
+long	get_long(sem_t *semaphore, long *varible)
+{
+	long	res;
+
+	res = 0;
+	sem_wait(semaphore);
+	res = *varible;
+	sem_post(semaphore);
+	return (res);
+}
+
+void	set_long(sem_t *semaphore, long *varible, long val)
+{
+	sem_wait(semaphore); // hold on some check on
+	*varible = val;
 	sem_post(semaphore);
 }
 
@@ -51,19 +69,13 @@ void	set_state(sem_t *semaphore, t_state *state, int new)
 
 void	ft_usleep(time_t time, t_data *data)
 {
-	(void)data;
 	time_t	start;
 
-	printf("ENTER FT_USLEEP \n");
 	start = get_t();
 	while (1)
 	{
-		// if (get_t() - start >= time || get_bool(data->philos.value->sem, &data->philos.die_flag))
-		if (get_t() - start >= time)
-		{
-				printf("OUT FT_USLEEP \n");
-			break ;
-		}
+		if (get_t() - start >= time || get_bool(data->philos.value->sem, &data->philos.die_flag))
+			break;
 		usleep(500);
 	}
 }

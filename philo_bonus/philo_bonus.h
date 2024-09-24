@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 22:22:38 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/23 19:52:50 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,11 @@ typedef struct s_nsem
 }				t_nsem;
 typedef struct s_wait
 {
-    int     *pids;
-    sem_t   *died;
-    bool     stop;
 	sem_t	*sh_sem;
+    sem_t   *died;
+    int     *pids;
+	long	pids_num;
+    bool     stop;
 }					t_wait;
 
 typedef struct s_philo
@@ -130,8 +131,10 @@ char	*ft_strjoin(char const *s1, char const *s2);
 int		ft_sem_open(t_data *data, char *sem_name, t_nsem **sem, int id);
 void    add_address(t_garbage **list, void *address);
 void    free_garbage(t_garbage *list);
-int 	get_value(sem_t *from , sem_t *garde);
+long 	get_value(sem_t *from , sem_t *garde);
 void	data_init(t_data **data, int argc, char **argv);
 int		ft_sem_forks(t_data *data, char *sem_name, t_nsem **sem, int id);
+void	set_long(sem_t *semaphore, long *varible, long val);
+long	get_long(sem_t *semaphore, long *varible);
 
 #endif

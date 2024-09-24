@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:06:23 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 18:42:57 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/23 18:33:57 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,7 +183,7 @@ void *check_wait(void *data)
     wait = data;
     while(wait->flag) // 1
     {
-        if(get_value(wait->died, wait->value_sema) == 0)
+        if(get_value(wait->died, wait->sh_sem) == 0)
         {
             printf("TO KILL\n");
             int x = 0;

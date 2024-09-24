@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 22:30:27 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/23 19:56:45 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	take_fork(t_philo *philo)
 	time_t	time;
 
 	sem_wait(philo->data->forks->sem);
-	printf("Left forks %d\n",get_value(philo->data->forks->sem, philo->data->sh_value->sem));
 	time = get_t() - philo->start;
 	if (!get_bool(philo->value->sem, &philo->die_flag))
 		printf("%ld %ld has taken a fork\n", time, philo->id);

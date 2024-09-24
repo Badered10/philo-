@@ -6,33 +6,41 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 22:36:02 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/23 21:03:29 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+void	get_curr_diff(t_philo *philo , time_t *curr , time_t *diff)
+{
+	time_t last;
+
+	last = get_long(philo->meal->sem, &philo->last_meal_time);
+	*curr = get_t() - philo->start;
+	*diff = *curr - last;
+}
+
 void	*scan_death(void *infos)
 {
-	t_data *data;
+	t_philo *philo;
+	time_t	diff;
+	time_t	curr;
 
-    data = infos;
-    while(1)
-    {
-        time_t curr = get_t() - data->philos.start;
-        sem_wait(data->philos.meal->sem);
-        if (curr - data->philos.last_meal_time > data->ttd)
+    philo = infos;
+    while(!get_bool(philo->full->sem, &philo->full_flag))
+    { 
+		get_curr_diff(philo , &curr , &diff);
+        if (diff > philo->data->ttd)
         {
-            sem_wait(data->died->sem);
-            printf("%ld %ld is dead\n", curr, data->philos.id);
-			data->philos.die_flag = 1;
-            printf("--->%d :died\n", get_value(data->died->sem, data->sh_value->sem));
-            printf("--->%d :data->meal_sema\n", get_value(data->philos.meal->sem, data->philos.value->sem));
+            printf("%ld %ld is dead\n", curr, philo->id);
+			sem_wait(philo->data->died->sem);
+			set_bool(philo->value->sem, &philo->die_flag, 1);
             break;
         }
-        sem_post(data->philos.meal->sem);
-        if(!get_value(data->philos.full->sem, data->philos.value->sem))
+        if(!get_value(philo->full->sem, philo->value->sem))
             break;
+		usleep(500);
     }
     return (NULL);
 }
