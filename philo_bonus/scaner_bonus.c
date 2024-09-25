@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/25 11:18:06 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/25 20:44:41 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,31 +44,3 @@ void	*scan_death(void *infos)
     }
     return (NULL);
 }
-
-
-	// t_philo	*philo;
-	// time_t	curr;
-	// char	*name;
-	// time_t	diff;
-	// int		i;
-
-	// i = 0;
-	// philo = infos;
-	// name = ft_itoa(philo->id);
-	// while (1)
-	// {
-	// 	get_curr_diff(philo->data, &curr, &diff);
-	// 	if (diff > philo->data->ttd)
-	// 	{
-	// 		printf("%ld %ld died\n", curr, philo->id);
-	// 		sem_unlink(name);
-	// 		free(name);
-	// 		exit (1);
-	// 	}
-	// 	if (get_state(philo->p_semaphore, &philo->state) == DONE)
-	// 		break ;
-	// 	i++;
-	// 	if (i == philo->data->num_of_philos)
-	// 		i = 0;
-	// }
-	// return (NULL);

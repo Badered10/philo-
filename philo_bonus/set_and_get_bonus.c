@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:46:41 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/23 20:58:37 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/25 20:31:28 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,29 +43,10 @@ long	get_long(sem_t *semaphore, long *varible)
 
 void	set_long(sem_t *semaphore, long *varible, long val)
 {
-	sem_wait(semaphore); // hold on some check on
+	sem_wait(semaphore);
 	*varible = val;
 	sem_post(semaphore);
 }
-
-int	get_state(sem_t *semaphore, t_state *state)
-{
-	int	res;
-
-	res = -1;
-	sem_wait(semaphore);
-	res = *state;
-	sem_post(semaphore);
-	return (res);
-}
-
-void	set_state(sem_t *semaphore, t_state *state, int new)
-{
-	sem_wait(semaphore);
-	*state = new;
-	sem_post(semaphore);
-}
-
 
 void	ft_usleep(time_t time, t_data *data)
 {

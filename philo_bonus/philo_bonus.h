@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/25 09:39:53 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/25 20:31:10 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,6 @@
 
 typedef struct s_data	t_data;
 
-typedef enum e_state
-{
-	NOTYET,
-	DONE
-}						t_state;
-
 typedef struct s_garbage
 {
 	void		*address;
@@ -67,6 +61,7 @@ typedef struct s_nsem
 	sem_t	*sem;
 	char	*name;
 }				t_nsem;
+
 typedef struct s_wait
 {
 	sem_t	*sh_sem;
@@ -87,7 +82,6 @@ typedef struct s_philo
 	long				last_meal_time;
 	bool				full_flag;
 	bool				die_flag;
-	t_state				state;
 	time_t				start;
 	t_data				*data;
 }						t_philo;
@@ -110,8 +104,6 @@ void	put_forks(t_philo *philo);
 void	take_fork(t_philo *philo);
 int		take_forks(t_philo *philo);
 void	ft_usleep(time_t time, t_data *data);
-void	set_state(sem_t *semaphore, t_state *state, int new);
-int		get_state(sem_t *semaphore, t_state *state);
 void	set_bool(sem_t *semaphore, bool *die_flag, bool val);
 bool	get_bool(sem_t *semaphore, bool *die_flag);
 void	*scan_death(void *infos);

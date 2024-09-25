@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 22:13:29 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/25 20:55:06 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,15 +71,13 @@ void	*philosophy(void *infos)
 	{
 		if (eating(philo))
 			break ;
-		// if (philo->full == 1 || get_bool(&philo->data->scan,
-		// 		&philo->data->die_flag))
-		// 	break ;
-		printf("%ld %ld is sleeping\n", get_t() - philo->data->start,
+		if (!philo->full && !get_bool(&philo->data->scan,
+				&philo->data->die_flag))
+			printf("%ld %ld is sleeping\n", get_t() - philo->data->start,
 			philo->id);
 		ft_usleep(philo->data->tts, philo->data);
-		// if (get_bool(&philo->data->scan, &philo->data->die_flag))
-		// 	break ;
-		printf("%ld %ld is thinking\n", get_t() - philo->data->start,
+		if (!get_bool(&philo->data->scan, &philo->data->die_flag))
+			printf("%ld %ld is thinking\n", get_t() - philo->data->start,
 			philo->id);
 		if (philo->data->num_of_philos % 2)
 			ft_usleep(1, philo->data);
@@ -120,6 +118,8 @@ int	main(int argc, char **argv)
 	data = set_data(argc, argv);
 	if (!data)
 		return (2);
+	if (data->num_of_philos % 2)
+		printf("SLEEEEEEEEEEEEEEEP\n");
 	if (data->num_of_meals != 0)
 		simulation(data);
 	clean_up(data);
