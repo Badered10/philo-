@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/25 20:31:10 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:29:13 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,6 @@
 
 typedef struct s_data	t_data;
 
-typedef struct s_garbage
-{
-	void		*address;
-	struct s_garbage	*next;
-}				t_garbage;
-
 typedef struct s_nsem
 {
 	sem_t	*sem;
@@ -88,10 +82,10 @@ typedef struct s_philo
 
 typedef struct s_data
 {
-	t_garbage			*list;
 	t_nsem				*died;
 	t_nsem              *sh_value;
 	t_nsem				*forks;
+	int					*pids;
 	long				num_of_philos;
 	long				num_of_meals;
 	long				ttd;
@@ -101,7 +95,7 @@ typedef struct s_data
 }						t_data;
 
 void	put_forks(t_philo *philo);
-void	take_fork(t_philo *philo);
+void	_fork(t_philo *philo);
 int		take_forks(t_philo *philo);
 void	ft_usleep(time_t time, t_data *data);
 void	set_bool(sem_t *semaphore, bool *die_flag, bool val);
@@ -111,7 +105,7 @@ int		parse(int argc, char **argv);
 int		eating(t_philo *philo);
 void	philosophy(t_philo	*philo);
 void	simulation(t_data *data);
-void	clean_up(t_data *data, unsigned int exit_num);
+void	clean_up(t_data *data, unsigned int exit_num, bool mode);
 time_t	get_t(void);
 void	init_philo(t_data *data , int x);
 t_data	*set_data(int argc, char **argv);
@@ -121,8 +115,6 @@ char	*ft_itoa(int n);
 int		ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 int		ft_sem_open(t_data *data, char *sem_name, t_nsem **sem, int id);
-void    add_address(t_garbage **list, void *address);
-void    free_garbage(t_garbage *list);
 long 	get_value(sem_t *from , sem_t *garde);
 void	data_init(t_data **data, int argc, char **argv);
 int		ft_sem_forks(t_data *data, char *sem_name, t_nsem **sem, int id);

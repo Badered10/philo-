@@ -6,34 +6,42 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:43:30 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/22 19:13:03 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:31:49 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void	unlink_semaphores(t_data *data)
+void	close_unlink(t_nsem *sem, bool mode)
 {
-	if (data->died)
-		sem_unlink(data->died->name);
-	if (data->forks)
-		sem_unlink(data->forks->name);
-	if (data->sh_value)
-		sem_unlink(data->sh_value->name);
+	if (!sem || !sem->sem || !sem->name)
+	{
+		if (sem)
+			free(sem);
+		return ;
+	}
 
-	if(data->philos.full)
-		sem_unlink(data->philos.full->name);
-	if(data->philos.meal)
-		sem_unlink(data->philos.meal->name);
-	if(data->philos.value)
-		sem_unlink(data->philos.value->name);
-		
+	sem_close(sem->sem);
+	if (mode)
+		sem_unlink(sem->name);
+	free(sem->name);
+	free(sem);
 }
 
-void	clean_up(t_data *data, unsigned int exit_num)
+void	unlink_semaphores(t_data *data, bool mode)
 {
-	unlink_semaphores(data);
-	free_garbage(data->list);
+	close_unlink(data->died, mode);
+	close_unlink(data->forks, mode);
+	close_unlink(data->sh_value, mode);
+	close_unlink(data->philos.full, mode);
+	close_unlink(data->philos.meal, mode);
+	close_unlink(data->philos.value, mode);
+}
+
+void	clean_up(t_data *data, unsigned int exit_num, bool mode)
+{
+	unlink_semaphores(data, mode);
+	free(data->pids);
 	free(data);
 	exit (exit_num);
 }

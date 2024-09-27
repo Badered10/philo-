@@ -1,0 +1,2 @@
+valgrind --tool=helgrind ./philo_bonus 5 800 200 200
+./philo_bonus 200000000000 100 100 200
