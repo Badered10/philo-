@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 20:14:10 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:40:24 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	take_left_fork(t_philo *philo)
 	time_t	time;
 
 	pthread_mutex_lock(philo->left_fork);
-	time = get_t() - philo->data->start;
+	time = get_t() - philo->start;
 	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
 		printf("%ld %ld has taken a fork\n", time, philo->id);
 }
@@ -33,7 +33,7 @@ void	take_right_fork(t_philo *philo)
 	time_t	time;
 
 	pthread_mutex_lock(philo->right_fork);
-	time = get_t() - philo->data->start;
+	time = get_t() - philo->start;
 	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
 		printf("%ld %ld has taken a fork\n", time, philo->id);
 }

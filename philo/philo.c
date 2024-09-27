@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/25 20:55:06 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:50:46 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,15 @@ int	eating(t_philo *philo)
 
 	if (take_forks(philo))
 		return (put_forks(philo), -1);
-	time = get_t() - philo->data->start;
+	time = get_t() - philo->start;
 	pthread_mutex_lock(&philo->meal_m);
 	philo->last_meal_time = time;
 	pthread_mutex_unlock(&philo->meal_m);
 	if (get_bool(&philo->data->scan, &philo->data->die_flag))
 		return (put_forks(philo), -1);
+	pthread_mutex_lock(&philo->print);
 	printf("%ld %ld is eating\n", time, philo->id);
+	pthread_mutex_unlock(&philo->print);
 	philo->eaten_meals++;
 	if (philo->eaten_meals == philo->data->num_of_meals)
 		philo->full = 1;
@@ -60,27 +62,42 @@ int	eating(t_philo *philo)
 	return (0);
 }
 
+void	sleep_and_think(t_philo *philo)
+{
+	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
+	{
+		pthread_mutex_lock(&philo->print);
+		printf("%ld %ld is sleeping\n", get_t() - philo->start,
+		philo->id);
+		pthread_mutex_unlock(&philo->print);
+	}
+	ft_usleep(philo->data->tts, philo->data);
+	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
+	{
+		pthread_mutex_lock(&philo->print);
+		printf("%ld %ld is thinking\n", get_t() - philo->start,
+		philo->id);
+		pthread_mutex_lock(&philo->print);
+	}
+	if (philo->data->num_of_philos % 2)
+		usleep(1000);
+}
+
 void	*philosophy(void *infos)
 {
 	t_philo	*philo;
 
 	philo = infos;
+	philo->start = philo->data->start;
 	if (philo->id % 2)
-		ft_usleep(1, philo->data);
+		usleep(1000);
 	while (philo->full != 1)
 	{
 		if (eating(philo))
 			break ;
-		if (!philo->full && !get_bool(&philo->data->scan,
-				&philo->data->die_flag))
-			printf("%ld %ld is sleeping\n", get_t() - philo->data->start,
-			philo->id);
-		ft_usleep(philo->data->tts, philo->data);
-		if (!get_bool(&philo->data->scan, &philo->data->die_flag))
-			printf("%ld %ld is thinking\n", get_t() - philo->data->start,
-			philo->id);
-		if (philo->data->num_of_philos % 2)
-			ft_usleep(1, philo->data);
+		if (philo->full)
+			break;
+		sleep_and_think(philo);
 	}
 	set_state(&philo->state_m, &philo->state, DONE);
 	return (NULL);
@@ -118,8 +135,6 @@ int	main(int argc, char **argv)
 	data = set_data(argc, argv);
 	if (!data)
 		return (2);
-	if (data->num_of_philos % 2)
-		printf("SLEEEEEEEEEEEEEEEP\n");
 	if (data->num_of_meals != 0)
 		simulation(data);
 	clean_up(data);

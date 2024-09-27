@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/16 20:26:13 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:45:07 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,12 @@ typedef struct s_philo
 	long				last_meal_time;
 	bool				full;
 	t_state				state;
+	time_t				start;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		meal_m;
 	pthread_mutex_t		state_m;
+	pthread_mutex_t		print;
 	pthread_t			philo;
 	t_data				*data;
 }						t_philo;
@@ -72,6 +74,7 @@ int						ft_isdigit(int c);
 long					ft_atol(const char *str);
 t_data					*set_data(int argc, char **argv);
 int						init_data_mutexs(t_data *data);
+int						init_print_mutex(t_philo *philos, int x);
 void					destroy_mutexs(t_data *data);
 pthread_mutex_t			*create_forks(long np);
 t_philo					*create_philos(t_data *data);

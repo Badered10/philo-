@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:43:30 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/17 13:54:45 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:51:47 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void	free_philos(t_data *data)
 	while (i < data->num_of_philos)
 	{
 		pthread_mutex_destroy(&data->philos[i].meal_m);
+		pthread_mutex_destroy(&data->philos[i].state_m);
+		pthread_mutex_destroy(&data->philos[i].print);
 		i++;
 	}
 	free(data->philos);
@@ -60,7 +62,7 @@ int	philo_init_mutex(t_philo *philos, int x)
 		free(philos);
 		return (printf("Failed to create a mutex philos !\n"), -1);
 	}
-	return (0);
+	return (init_print_mutex(philos, x));
 }
 
 void	clean_up(t_data *data)

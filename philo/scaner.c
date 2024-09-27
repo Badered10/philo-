@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/25 20:53:53 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/27 23:44:52 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	*scan_death(void *infos)
 
 	i = 0;
 	data = infos;
-	while (1)
+	while (!all_done(data))
 	{
 		get_curr_diff(data, &curr, &diff, i);
 		if (diff > data->ttd)
@@ -63,7 +63,22 @@ void	*scan_death(void *infos)
 		i++;
 		if (i == data->num_of_philos)
 			i = 0;
-		usleep(1000);
+		usleep(500);
 	}
 	return (NULL);
+}
+
+int	init_print_mutex(t_philo *philos, int x)
+{
+	if (pthread_mutex_init(&philos[x].print, NULL))
+	{
+		while (x > 0)
+		{
+			pthread_mutex_destroy(&philos[x].print);
+			x--;
+		}
+		free(philos);
+		return (printf("Failed to create a mutex philos !\n"), -1);
+	}
+	return (0);
 }
