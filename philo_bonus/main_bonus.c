@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/27 23:31:21 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 10:50:39 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ int	eating(t_philo *philo)
 	sem_wait(philo->meal->sem);
 	time = get_t() - philo->start;
 	philo->last_meal_time = time;
-	// printf("--id : %ld--> %ld\n", philo->id,philo->last_meal_time);
 	sem_post(philo->meal->sem);
-	// set_long(philo->meal->sem, &philo->last_meal_time, get_t() - philo->start);
+	
 	sem_wait(philo->value->sem);
-	printf("%ld %ld is eating\n", time, philo->id);
+	if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
+		printf("%ld %ld is eating\n", time, philo->id);
 	sem_post(philo->value->sem);
 	philo->eaten_meals++;
 	if (philo->eaten_meals == philo->data->num_of_meals)
@@ -131,19 +131,15 @@ void	philosophy(t_philo	*philo)
 	{
 		if (eating(philo))
 			break ;
-		if(get_value(philo->data->died->sem, philo->data->sh_value->sem))
-		{
-			sem_wait(philo->value->sem);
+		sem_wait(philo->value->sem);
+		if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
 			printf("%ld %ld is sleeping\n", get_t() - philo->start, philo->id);
-			sem_post(philo->value->sem);
-		}
+		sem_post(philo->value->sem);
 		ft_usleep(philo->data->tts, philo->data);
-		if(get_value(philo->data->died->sem, philo->data->sh_value->sem))
-		{
-			sem_wait(philo->value->sem);	
+		sem_wait(philo->value->sem);	
+		if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
 			printf("%ld %ld is thinking\n", get_t() - philo->start, philo->id);
-			sem_post(philo->value->sem);
-		}
+		sem_post(philo->value->sem);
 		if (philo->data->num_of_philos % 2)
 			usleep(1000);
 	}
@@ -155,9 +151,18 @@ long get_value(sem_t *from , sem_t *garde)
 {
     long	value;
 
+	value = 0;
     sem_wait(garde);
     value = from->__align;
     sem_post(garde);
+    return (value);
+}
+
+long ft_get_value(sem_t *from)
+{
+    long	value;
+
+    value = from->__align;
     return (value);
 }
 
@@ -167,9 +172,9 @@ void *check_wait(void *data)
     int		x;
 	x = 0;
     wait = data;
-    while(get_bool(wait->sh_sem, &wait->stop))
+    while (get_bool(wait->stop, &wait->stop_flag))
     {
-        if (get_value(wait->died, wait->sh_sem) == 0)
+        if (!ft_get_value(wait->died) || ft_get_value(wait->died) > 1)
         {
             while(x < wait->pids_num)
             {
@@ -198,15 +203,15 @@ void	simulation(t_data *data)
 			philosophy(&data->philos);
 		i++;
 	}
-	wait.sh_sem = data->sh_value->sem;
 	wait.died = data->died->sem;
-	wait.stop = 1;
+	wait.stop = data->stop->sem;
+	wait.stop_flag = 1;
 	wait.pids = data->pids;
 	wait.pids_num = data->num_of_philos;
     pthread_create(&thread, NULL, &check_wait, &wait);
 	while (waitpid(-1, NULL, 0) != -1)
 	;
-    wait.stop = 0;
+	set_bool(data->stop->sem, &wait.stop_flag, 0);
     pthread_join(thread, NULL);
 }
 

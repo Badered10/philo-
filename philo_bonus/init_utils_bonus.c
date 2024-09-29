@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:43:30 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/27 23:31:49 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 10:36:48 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void	unlink_semaphores(t_data *data, bool mode)
 	close_unlink(data->died, mode);
 	close_unlink(data->forks, mode);
 	close_unlink(data->sh_value, mode);
+	close_unlink(data->stop, mode);
 	close_unlink(data->philos.full, mode);
 	close_unlink(data->philos.meal, mode);
 	close_unlink(data->philos.value, mode);

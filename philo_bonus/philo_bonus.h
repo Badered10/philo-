@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/27 23:29:13 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 10:30:26 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@
 # ifndef SEM_NAME_2
 #  define SEM_NAME_2 "sh_value"
 # endif
+# ifndef SEM_NAME_3
+#  define SEM_NAME_3 "stop"
+# endif
 
 
 typedef struct s_data	t_data;
@@ -58,11 +61,11 @@ typedef struct s_nsem
 
 typedef struct s_wait
 {
-	sem_t	*sh_sem;
+	sem_t	*stop;
     sem_t   *died;
     int     *pids;
 	long	pids_num;
-    bool     stop;
+    bool     stop_flag;
 }					t_wait;
 
 typedef struct s_philo
@@ -85,6 +88,7 @@ typedef struct s_data
 	t_nsem				*died;
 	t_nsem              *sh_value;
 	t_nsem				*forks;
+	t_nsem				*stop;
 	int					*pids;
 	long				num_of_philos;
 	long				num_of_meals;
@@ -95,7 +99,6 @@ typedef struct s_data
 }						t_data;
 
 void	put_forks(t_philo *philo);
-void	_fork(t_philo *philo);
 int		take_forks(t_philo *philo);
 void	ft_usleep(time_t time, t_data *data);
 void	set_bool(sem_t *semaphore, bool *die_flag, bool val);

@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/27 22:41:07 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 08:56:49 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ void	take_fork(t_philo *philo)
 	if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
 	{
 		sem_wait(philo->value->sem);
-		printf("%ld %ld has taken a fork\n",get_t() - philo->start, philo->id);
+		if(get_value(philo->data->died->sem, philo->data->sh_value->sem))
+			printf("%ld %ld has taken a fork\n",get_t() - philo->start, philo->id);
 		sem_post(philo->value->sem);
 	}
 }
