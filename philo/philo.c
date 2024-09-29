@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/28 20:53:42 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 11:56:06 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,11 @@ int	eating(t_philo *philo)
 	time_t	time;
 
 	if (take_forks(philo))
-		return (put_forks(philo), -1);
+	{
+		if (philo->data->num_of_philos == 1)
+			pthread_mutex_unlock(philo->left_fork);
+		return (-1);
+	}
 	time = get_t() - philo->start;
 	pthread_mutex_lock(&philo->meal_m);
 	philo->last_meal_time = time;

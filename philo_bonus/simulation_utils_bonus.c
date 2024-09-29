@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/29 08:56:49 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/29 12:16:32 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	take_forks(t_philo *philo)
 	else
 	{
 		take_fork(philo);
-		while ((get_value(philo->data->died->sem, philo->data->sh_value->sem)))
-			;
+		while (!get_bool(philo->value->sem, &philo->die_flag))
+			usleep(500);
 		return (-1);
 	}
 }
