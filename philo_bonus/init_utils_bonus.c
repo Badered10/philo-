@@ -20,7 +20,6 @@ void	close_unlink(t_nsem *sem, bool mode)
 			free(sem);
 		return ;
 	}
-
 	sem_close(sem->sem);
 	if (mode)
 		sem_unlink(sem->name);
@@ -44,7 +43,7 @@ void	clean_up(t_data *data, unsigned int exit_num, bool mode)
 	unlink_semaphores(data, mode);
 	free(data->pids);
 	free(data);
-	exit (exit_num);
+	exit(exit_num);
 }
 
 time_t	get_t(void)

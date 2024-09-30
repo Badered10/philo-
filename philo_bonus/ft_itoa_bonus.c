@@ -34,7 +34,7 @@ static char	*alloc(int res)
 	str = (char *)malloc(sizeof(char) * res + 1);
 	if (!str)
 		return (NULL);
-	memset(str, 0 ,res + 1);
+	memset(str, 0, res + 1);
 	return (str);
 }
 

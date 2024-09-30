@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/29 11:56:06 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/30 14:53:26 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,40 +39,13 @@ int	parse(int argc, char **argv)
 	return (1);
 }
 
-int	eating(t_philo *philo)
-{
-	time_t	time;
-
-	if (take_forks(philo))
-	{
-		if (philo->data->num_of_philos == 1)
-			pthread_mutex_unlock(philo->left_fork);
-		return (-1);
-	}
-	time = get_t() - philo->start;
-	pthread_mutex_lock(&philo->meal_m);
-	philo->last_meal_time = time;
-	pthread_mutex_unlock(&philo->meal_m);
-	if (get_bool(&philo->data->scan, &philo->data->die_flag))
-		return (put_forks(philo), -1);
-	pthread_mutex_lock(&philo->data->print);
-	printf("%ld %ld is eating\n", time, philo->id);
-	pthread_mutex_unlock(&philo->data->print);
-	philo->eaten_meals++;
-	if (philo->eaten_meals == philo->data->num_of_meals)
-		philo->full = 1;
-	ft_usleep(philo->data->tte, philo->data);
-	put_forks(philo);
-	return (0);
-}
-
 void	sleep_and_think(t_philo *philo)
 {
 	if (!get_bool(&philo->data->scan, &philo->data->die_flag))
 	{
 		pthread_mutex_lock(&philo->data->print);
 		printf("%ld %ld is sleeping\n", get_t() - philo->start,
-		philo->id);
+			philo->id);
 		pthread_mutex_unlock(&philo->data->print);
 	}
 	ft_usleep(philo->data->tts, philo->data);
@@ -80,7 +53,7 @@ void	sleep_and_think(t_philo *philo)
 	{
 		pthread_mutex_lock(&philo->data->print);
 		printf("%ld %ld is thinking\n", get_t() - philo->start,
-		philo->id);
+			philo->id);
 		pthread_mutex_unlock(&philo->data->print);
 	}
 	if (philo->data->num_of_philos % 2)
@@ -100,7 +73,7 @@ void	*philosophy(void *infos)
 		if (eating(philo))
 			break ;
 		if (philo->full)
-			break;
+			break ;
 		sleep_and_think(philo);
 	}
 	set_state(&philo->state_m, &philo->state, DONE);

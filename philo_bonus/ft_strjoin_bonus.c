@@ -31,11 +31,11 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (NULL);
 	while (++i < len1)
 		new[i] = s1[i];
-	while(++j < len2)
+	while (++j < len2)
 	{
 		new[i] = s2[j];
 		i++;
 	}
-	new[i]= '\0';
+	new[i] = '\0';
 	return (new);
 }

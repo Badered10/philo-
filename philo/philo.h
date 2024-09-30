@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/28 20:51:56 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/09/30 14:52:42 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,5 +98,6 @@ void					put_forks(t_philo *philo);
 void					take_left_fork(t_philo *philo);
 void					take_right_fork(t_philo *philo);
 int						take_forks(t_philo *philo);
+int						eating(t_philo *philo);
 
 #endif

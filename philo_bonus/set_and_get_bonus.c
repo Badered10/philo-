@@ -55,8 +55,9 @@ void	ft_usleep(time_t time, t_data *data)
 	start = get_t();
 	while (1)
 	{
-		if (get_t() - start >= time || !get_value(data->died->sem, data->sh_value->sem))
-			break;
+		if (get_t() - start >= time || !get_value(data->died->sem,
+				data->sh_value->sem))
+			break ;
 		usleep(500);
 	}
 }

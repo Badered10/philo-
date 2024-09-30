@@ -24,8 +24,9 @@ void	take_fork(t_philo *philo)
 	if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
 	{
 		sem_wait(philo->value->sem);
-		if(get_value(philo->data->died->sem, philo->data->sh_value->sem))
-			printf("%ld %ld has taken a fork\n",get_t() - philo->start, philo->id);
+		if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
+			printf("%ld %ld has taken a fork\n", get_t() - philo->start,
+				philo->id);
 		sem_post(philo->value->sem);
 	}
 }
