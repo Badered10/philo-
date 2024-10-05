@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:48:16 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/29 12:16:32 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:16:44 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,23 @@ int	take_forks(t_philo *philo)
 			usleep(500);
 		return (-1);
 	}
+}
+
+void	sleep_and_think(t_philo *philo)
+{
+	if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
+	{
+		sem_wait(philo->value->sem);
+		printf("%ld %ld is sleeping\n", get_t() - philo->start, philo->id);
+		sem_post(philo->value->sem);
+	}
+	ft_usleep(philo->data->tts, philo->data);
+	if (get_value(philo->data->died->sem, philo->data->sh_value->sem))
+	{
+		sem_wait(philo->value->sem);
+		printf("%ld %ld is thinking\n", get_t() - philo->start, philo->id);
+		sem_post(philo->value->sem);
+	}
+	if (philo->data->num_of_philos % 2)
+		usleep(1000);
 }

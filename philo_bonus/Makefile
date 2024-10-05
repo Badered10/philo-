@@ -6,14 +6,14 @@
 #    By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 18:07:11 by baouragh          #+#    #+#              #
-#    Updated: 2024/09/30 15:05:12 by baouragh         ###   ########.fr        #
+#    Updated: 2024/10/02 18:40:16 by baouragh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			:= philo_bonus
 
 CC				:= cc
-CFLAGS			:= -Wall -Wextra -Werror -pthread #-fsanitize=thread -g3 
+CFLAGS			:= -Wall -Wextra -Werror -pthread
 
 SRCS_B			:=	main_bonus.c ft_isdigit_bonus.c \
 					ft_atol_bonus.c \

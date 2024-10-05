@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/30 14:58:02 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/05 14:22:11 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,15 @@ void	*scan_death(void *infos)
 		if (diff > philo->data->ttd)
 		{
 			sem_wait(philo->data->sh_value->sem);
-			printf("%ld %ld is dead\n", curr, philo->id);
 			set_bool(philo->value->sem, &philo->die_flag, 1);
-			sem_wait(philo->data->died->sem);
+			sem_wait(philo->value->sem);
+			if (!get_bool(philo->full->sem, &philo->full_flag))
+				announcement(philo, curr);
+			sem_post(philo->value->sem);
 			sem_post(philo->data->sh_value->sem);
 			break ;
 		}
-		if (!get_value(philo->full->sem, philo->value->sem))
-			break ;
-		usleep(500);
+		usleep(8000);
 	}
 	return (NULL);
 }
@@ -77,6 +77,7 @@ void	*check_wait(void *data)
 	{
 		if (!ft_get_value(wait->died) || ft_get_value(wait->died) > 1)
 		{
+			usleep(2000);
 			while (x < wait->pids_num)
 			{
 				kill(wait->pids[x], SIGKILL);

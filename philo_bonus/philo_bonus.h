@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:14:24 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/30 15:08:00 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:16:00 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,7 @@ long					get_long(sem_t *semaphore, long *varible);
 long					ft_get_value(sem_t *from);
 void					*check_wait(void *data);
 int						open_sems(t_philo *philo);
+void					announcement(t_philo *philo, time_t curr);
+void					sleep_and_think(t_philo *philo);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:41:14 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/28 20:52:53 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/01 20:38:45 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ pthread_mutex_t	*create_forks(long np)
 	i = 0;
 	forks = malloc(sizeof(pthread_mutex_t) * np);
 	if (!forks)
-		return (NULL);
+		return (printf("Failed to alloc forks mutexs\n"), NULL);
 	while (i < np)
 	{
 		if (pthread_mutex_init(&forks[i], NULL))

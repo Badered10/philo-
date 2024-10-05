@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:41:14 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/29 12:06:00 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/01 21:27:40 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,4 +81,12 @@ t_data	*set_data(int argc, char **argv)
 	if (ft_sem_open(data, SEM_NAME_3, &data->stop, -1))
 		return (printf("sem_open faild\n"), clean_up(data, 1, 1), NULL);
 	return (data);
+}
+
+void	announcement(t_philo *philo, time_t curr)
+{
+	sem_wait(philo->data->died->sem);
+	usleep(1000);
+	if (!get_bool(philo->full->sem, &philo->full_flag))
+		printf("%ld %ld died\n", curr, philo->id);
 }

@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:12:59 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/30 14:53:26 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/02 18:17:12 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,9 @@ void	*philosophy(void *infos)
 	t_philo	*philo;
 
 	philo = infos;
-	philo->start = philo->data->start;
+	while (get_t() < philo->data->start)
+		usleep(500);
+	philo->start = get_t();
 	if (philo->id % 2)
 		usleep(1000);
 	while (philo->full != 1)
@@ -86,7 +88,7 @@ void	simulation(t_data *data)
 
 	i = 0;
 	data->die_flag = 0;
-	data->start = get_t();
+	data->start = get_t() + data->num_of_philos * 25;
 	while (i < data->num_of_philos)
 	{
 		pthread_create(&data->philos[i].philo, NULL, &philosophy,

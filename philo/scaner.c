@@ -6,7 +6,7 @@
 /*   By: baouragh <baouragh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:49:06 by baouragh          #+#    #+#             */
-/*   Updated: 2024/09/28 20:55:32 by baouragh         ###   ########.fr       */
+/*   Updated: 2024/10/01 20:55:35 by baouragh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	*scan_death(void *infos)
 		if (diff > data->ttd)
 		{
 			set_bool(&data->scan, &data->die_flag, 1);
+			usleep(1000);
 			printf("%ld %ld died\n", curr, data->philos[i].id);
 			break ;
 		}
